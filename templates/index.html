@@ -17,7 +17,14 @@
 <body>
     <div class="container">
         <div class="row">
-        <!-- display tweet here -->
+            <!-- display tweet here -->
+            <div class="col-md-12">
+                <div class="tweet">
+                    
+                </div>
+            </div>
+            
+            <!-- display tweet here -->
 
         </div>
         <div class="row justify-content-center">
@@ -25,20 +32,30 @@
                 <button type="button" class="btn btn-dark">Grab A New Tweet</button>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h1 id="modelPredict" style="text-align: center;padding-top:20px"></h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h1 style="text-align: center;padding-top:20px;">What do you think?</h1>
+            </div>
+        </div>
         <div class="row justify-content-center">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <img src="../Resources/faceImages/frowning.png" 
-                        onclick="clickedFace('frowning')" alt="Frowning Face" 
+                        onclick="clickedFace('unhappy')" alt="Frowning Face" 
                         style="width:300px; height:300px; ">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <img src="../Resources/faceImages/neutral.png" 
                         onclick="clickedFace('neutral')" alt="Neutral Face" 
                         style="width:300px; height:300px;">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <img src="../Resources/faceImages/smiling.png" 
-                         onclick="clickedFace('smiling')" alt="Smiling Face" 
+                         onclick="clickedFace('happy')" alt="Smiling Face" 
                         style="width:300px; height:300px;">
             </div>
         </div>
