@@ -18,7 +18,7 @@ def predictModel(theTweet):
     clean_df = lema(df, "tweet")
     with open('vectorizer.pkl', 'rb') as inp:
         vectorize = pickle.load(inp)
-        model = load_model('deep_sentiment_model_trained.h5')
+        model = load_model('deep_sentiment_model_trained_zenith.h5')
         predict_me = vectorize.transform(clean_df['joined_lemm']).toarray()
         return float(model.predict(predict_me)[0][0])
 
