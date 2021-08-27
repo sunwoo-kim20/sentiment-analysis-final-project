@@ -29,7 +29,7 @@ def api_call():
     tweets = []
     json_response = connect_to_endpoint(search_url, query_params)
     for response in json_response['data']:
-        tweets.append( {'tweet': response['text'], 'sentiment score': ''}) 
+        tweets.append( {'tweet': response['text'], 'sentiment': ''}) 
     return tweets
 
 
