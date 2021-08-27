@@ -20,9 +20,9 @@ def home():
 @app.route("/apicall")
 def apicalled():
 	tweet_data = tweet.api_call()[0]
+	tweet_data['sentiment'] = predictModel(tweet_data['tweet'])
 	#mongo.db.collection.update({}, tweet_data, upsert=True)	
 	#api_data = mongo.db.collection.find_one()
-	tweet_data['sentiment'] = predictModel(tweet_data['tweet'])
 	return json.loads(json_util.dumps(tweet_data))
 
 @app.route("/data")
