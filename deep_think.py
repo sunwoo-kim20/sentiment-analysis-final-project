@@ -106,7 +106,7 @@ def plot_roc(name, labels, predictions, **kwargs):
     
 
 
-read_csv = pd.read_csv('imdb_reviews_data.csv')
+read_csv = pd.read_csv('Resources/data/imdb_reviews_data.csv')
 df = pd.DataFrame(read_csv)
 
 clean_df = lema(df,'text')
