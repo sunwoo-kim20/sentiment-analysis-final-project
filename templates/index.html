@@ -16,41 +16,34 @@
 
 <body>
     <div class="container">
-        <div class="row">
+        <div class="row justify-content-center">
             <!-- display tweet here -->
-            <div class="col-md-12">
-                <div class="tweet">
-                    
-                </div>
+            <div class="col-md-10">
+                <div class="tweetholder"></div>
             </div>
-            
-            <!-- display tweet here -->
-
         </div>
         <div class="row justify-content-center">
             <div class="col-md-3">
-                <button type="button" class="btn btn-dark">Grab A New Tweet</button>
+                <button type="button" class="btn btn-dark" 
+                    style="margin: 10px;" onclick="updateTweet()">Grab A New Tweet</button>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <h1 id="modelPredict" style="text-align: center;padding-top:20px"></h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
+        <div class="row justify-content-center">
+            <div class="col-md-9 secondBox">
+                <h1 class="modelPredict" style="text-align: center;padding-top:20px"></h1>
+                <hr style="margin-top: 10px;">
                 <h1 style="text-align: center;padding-top:20px;">What do you think?</h1>
             </div>
         </div>
         <div class="row justify-content-center">
-            <div class="col-md-6">
-                <img src="../Resources/faceImages/frowning.png" 
-                        onclick="clickedFace('negative')" alt="Frowning Face" 
+            <div class="col-md-5">
+                <img src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/285/frowning-face_2639-fe0f.png" 
+                        onclick="clickedFace('NEGATIVE')" alt="Frowning Face" 
                         style="width:300px; height:300px; ">
             </div>
-            <div class="col-md-6">
-                <img src="../Resources/faceImages/smiling.png" 
-                         onclick="clickedFace('positive')" alt="Smiling Face" 
+            <div class="col-md-5">
+                <img src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/285/slightly-smiling-face_1f642.png" 
+                         onclick="clickedFace('POSITIVE')" alt="Smiling Face" 
                         style="width:300px; height:300px;">
             </div>
         </div>
