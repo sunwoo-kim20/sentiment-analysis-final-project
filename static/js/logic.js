@@ -1,5 +1,6 @@
 function clickedFace(choice) {
     updateTweet();
+    console.log(choice)
 }
 
 function updateTweet() {
@@ -13,7 +14,6 @@ function updateTweet() {
         else {
             prediction = "NEGATIVE"
         }
-
         updatePrediction(prediction)
     })
 }
