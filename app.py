@@ -14,17 +14,19 @@ mongo = PyMongo(app, uri='mongodb://localhost:27017/tweets')
 
 @app.route("/")
 def home():
+	return render_template("index.html")
+
+@app.route("/apicall")
+def apicalled():
 	tweet_data = tweet.api_call()
 	mongo.db.collection.update({}, tweet_data, upsert=True)	
 	api_data = mongo.db.collection.find_one()
-	return render_template("index.html", api_data = api_data)
-
-
+	return json.loads(json_util.dumps(api_data = api_data))
 
 @app.route("/data")
 def tweet_data():
-    tweet = mongo.db.collection.find_one()
-    return json.loads(json_util.dumps(tweet))
+    tweet_show = mongo.db.collection.find_one()
+    return json.loads(json_util.dumps(tweet_show))
 
 if __name__ == "__main__":
 	app.run(debug=True)	
