@@ -18,12 +18,12 @@ from sklearn.metrics import classification_report
 import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords 
-from tensorflow.keras.models import load_model
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 from tensorflow import keras
 import string
 import re
+import pickle
 from sklearn.preprocessing import Normalizer
 wn = nltk.WordNetLemmatizer()
 string.punctuation
@@ -123,6 +123,11 @@ vectorizer.fit(X_train)
 vectorized_train = vectorizer.transform(X_train).toarray()
 vectorized_test = vectorizer.transform(X_test).toarray()
 vectorized_val = vectorizer.transform(X_val).toarray()
+
+with open("vectorizer.pkl", 'wb') as outp:
+    pickle.dump(vectorizer, outp, pickle.HIGHEST_PROTOCOL)
+
+
 norm = Normalizer().fit(vectorized_train)
 norm_vectorized_train = norm.transform(vectorized_train)
 norm_vectorized_test = norm.transform(vectorized_test)
@@ -229,4 +234,4 @@ baseline_history = model.fit(
 train_predictions_baseline = model.predict(train_features, batch_size=BATCH_SIZE)
 test_predictions_baseline = model.predict(test_features, batch_size=BATCH_SIZE)
 
-model.save("deep_sentiment_model_trained.h5")
+model.save("deep_sentiment_model_trained.h5", save_format='tf')
