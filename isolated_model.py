@@ -26,7 +26,7 @@ wn = nltk.WordNetLemmatizer()
 string.punctuation
 stop = stopwords.words('english')
 
-rds_connection_string = "postgres:Stardrive!1@localhost:5432/sentiment_db"
+rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
 
 df = pd.read_sql_query('select * from sentiment_data', con=engine).iloc[np.random.choice(np.arange(50000), 5000, False)]

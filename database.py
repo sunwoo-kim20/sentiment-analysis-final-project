@@ -4,11 +4,10 @@ import pandas as pd
 from sqlalchemy import Table, Column, Integer, String, MetaData, Date
 from sqlalchemy import MetaData
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, BigInteger
 from sqlalchemy import create_engine
 
-rds_connection_string = "postgres:password@localhost:5432/sentiment_db"
+rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
 
 conn = engine.connect()
@@ -16,7 +15,7 @@ Base = declarative_base()
 Base.metadata.create_all(conn)
 meta = MetaData()
 
-read_csv = pd.read_csv('imdb_reviews_data.csv')
+df = pd.read_csv('Resources/data/imdb_reviews_data.csv')
 
 df['sentiments'] = df.sentiment.apply(lambda x: 1 if x in ['positive'] else 0)
 df.drop(['Unnamed: 0','sentiment'],axis=1,inplace=True)

@@ -1,10 +1,10 @@
 function clickedFace(choice) {
     // call route to give vote to flask 
     if (choice === 'Positive') {
-        d3.json('/positive_chosen').then(unused => {})
+        d3.json('/positive_update').then(unused => {})
     }
     if (choice === 'Negative') {
-        d3.json('/negative_chosen').then(unused => {})
+        d3.json('/negative_update').then(unused => {})
     }
     // update tweet
     updateTweet();

@@ -15,7 +15,7 @@ def predictModel(theTweet):
     list_for_vectorize.append(theTweet)
     df = pd.DataFrame({'tweet':list_for_vectorize})
     clean_df = lema(df, "tweet")
-    with open('vectorizer.pkl', 'rb') as inp:
+    with open('vectorizer.pickle', 'rb') as inp:
         vectorize = pickle.load(inp)
         model = load_model('deep_sentiment_model_trained_zenith.h5')
         predict_me = vectorize.transform(clean_df['joined_lemm']).toarray()
@@ -49,3 +49,6 @@ def lema(df,column):
     final_df = pd.DataFrame()
     final_df['joined_lemm'] = df['joined_lemm']
     return final_df
+
+
+predictModel('this is a tweet to test ')
