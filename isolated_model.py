@@ -30,7 +30,6 @@ rds_connection_string = "postgres:password@localhost:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
 
 df = pd.read_sql_query('select * from sentiment_data', con=engine).iloc[np.random.choice(np.arange(50000), 5000, False)]
-df['sentiments'] = df.sentiment.apply(lambda x: 1 if x in ['positive'] else 0)
 
 def remove_punct(text):
     text_nopunct = "".join([char for char in text if char not in string.punctuation])
