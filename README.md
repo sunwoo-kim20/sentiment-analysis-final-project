@@ -77,10 +77,10 @@ To get a local copy up and running follow these simple steps.
 
 This application allows users to grab a tweet based on a keyword and select whether they consider the tweet to be positive or negative in sentiment. The sentiment analysis model then makes a prediction on the same tweet thereafter. 
 
-![Screenshot of Michelin star documents in MongoDBCompass](https://github.com/sunwoo-kim20/etl-michelin-restaurants/blob/main/docs/images/michelin-db-screenshot.png?raw=true)
+![Screenshot of Sentiment Analysis Application]()
 
 Data includes nearest hotel to the restaurant and the restaurant's specialty dishes.
-![Screenshot of calling data through pymongo](https://github.com/sunwoo-kim20/etl-michelin-restaurants/blob/main/docs/images/document-calls.png?raw=true)
+![Screenshot of Neural Network Structure]()
 
 
 
