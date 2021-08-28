@@ -79,7 +79,7 @@ This application allows users to grab a tweet based on a keyword and select whet
 
 ![Screenshot of Sentiment Analysis Application]()
 
-Data includes nearest hotel to the restaurant and the restaurant's specialty dishes.
+
 ![Screenshot of Neural Network Structure]()
 
 
