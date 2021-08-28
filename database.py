@@ -8,7 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, BigInteger
 from sqlalchemy import create_engine
 
-rds_connection_string = "postgres:Stardrive!1@localhost:5432/sentiment_db"
+rds_connection_string = "postgres:password@localhost:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
 
 conn = engine.connect()
