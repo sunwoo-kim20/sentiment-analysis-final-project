@@ -1,6 +1,13 @@
 function clickedFace(choice) {
+    // call route to give vote to flask 
+    if (choice === 'Positive') {
+        d3.json('/positive_chosen').then(unused => {})
+    }
+    if (choice === 'Negative') {
+        d3.json('/negative_chosen').then(unused => {})
+    }
+    // update tweet
     updateTweet();
-    console.log(choice)
 }
 
 function updateTweet() {
@@ -22,4 +29,5 @@ function updatePrediction(choice) {
     d3.select(".modelPredict").text(`Our model predicts this tweet has a ${choice} sentiment.`)
 }
 
+// grab a tweet when webpage is opened
 updateTweet();
