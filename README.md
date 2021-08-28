@@ -46,7 +46,7 @@ Our Sentiment Analysis application includes a level of interactivity through Fla
 ### Built With
 
 * PostgreSQL/SQLAlchemy
-* Pandas - scikit learn
+* Pandas - tensorflow
 * Flask
 * HTML
 * JavaScript - D3
