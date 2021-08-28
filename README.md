@@ -40,8 +40,7 @@ Our Sentiment Analysis application includes a level of interactivity through Fla
 
 ## Data
 
-* [IMDB Movie Review Dataset](http://ai.stanford.edu/~amaas/data/sentiment/)
-Citation: Maas, Andrew L, et al. “Learning Word Vectors for Sentiment Analysis.” Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies, June 2011, pp. 142–150., www.aclweb.org/anthology/P11-1015. 
+* [IMDB Movie Review Dataset](http://ai.stanford.edu/~amaas/data/sentiment/) -- Citation: Maas, Andrew L, et al. “Learning Word Vectors for Sentiment Analysis.” Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies, June 2011, pp. 142–150., www.aclweb.org/anthology/P11-1015. 
 
 * [Twitter API](https://developer.twitter.com/en/docs)
 
