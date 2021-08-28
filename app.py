@@ -28,7 +28,7 @@ rds_connection_string = "postgres:password@localhost:5432/sentiment_db"
 
 Base = declarative_base()
 # Create class for updating data
-class tweet(Base):
+class Tweet(Base):
     __tablename__ = 'tweet'
     id = Column(BigInteger, primary_key=True)
     tweet = Column(String())
@@ -51,22 +51,46 @@ def apicalled():
 @app.route("/positive_update")
 def positive_update():
 	tweet_data['time_data_inserted'] = datetime.now()
-	tweet_data['predicted_sentiments'] =
+	tweet_data['predicted_sentiments'] = 1
 
 	# Create connection to SQL database
 	engine = create_engine(f'postgresql://{rds_connection_string}')
 	conn = engine.connect()
 	session = Session(bind = engine)
 
-
 	# Create tweet instance
+	tweet_upload = Tweet(
+		id = tweet_data.id,
+		tweet = tweet_data.tweet,
+		sentiments = tweet_data.sentiment,
+		predicted_sentiments = tweet_data.predicted_sentiments,
+		time_data_inserted = tweet_data.time_data_inserted)
 
-
+	# Add new instance to database
+	session.add(tweet_upload)
+	session.commit()
 
 @app.route("/negative_update")
 def negative_update():
-	tweet_data['time_data_inserted'] =
-	tweet_data['predicted_sentiments'] =
+	tweet_data['time_data_inserted'] = datetime.now()
+	tweet_data['predicted_sentiments'] = 0
+
+	# Create connection to SQL database
+	engine = create_engine(f'postgresql://{rds_connection_string}')
+	conn = engine.connect()
+	session = Session(bind = engine)
+
+	# Create tweet instance
+	tweet_upload = Tweet(
+		id = tweet_data.id,
+		tweet = tweet_data.tweet,
+		sentiments = tweet_data.sentiment,
+		predicted_sentiments = tweet_data.predicted_sentiments,
+		time_data_inserted = tweet_data.time_data_inserted)
+
+	# Add new instance to database
+	session.add(tweet_upload)
+	session.commit()
 
 if __name__ == "__main__":
 	app.run(debug=True)
