@@ -10,7 +10,6 @@ from modelPredict import predictModel
 # initialize flask
 app = Flask(__name__)
 
-
 @app.route("/")
 def home():
 	return render_template("index.html")
@@ -20,10 +19,6 @@ def apicalled():
 	tweet_data = tweet.api_call()[0]
 	tweet_data['sentiment'] = predictModel(tweet_data['tweet'])
 	return json.loads(json_util.dumps(tweet_data))
-
-@app.route("_sentiment_given")
-def update_db():
-	print(requests.args.get('selected',0)
 
 if __name__ == "__main__":
 	app.run(debug=True)	
