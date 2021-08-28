@@ -1,4 +1,3 @@
-from numpy.lib.function_base import vectorize
 from tensorflow.keras.models import load_model
 import pickle
 import pandas as pd

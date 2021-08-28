@@ -17,13 +17,13 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-          <a class="navbar-brand" href="index.html">Sentiment Analysis</a>
+          <a class="navbar-brand" href="../templates/index.html">Sentiment Analysis</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-              <a class="nav-link active" aria-current="page" href="index.html">The Process</a>
+              <a class="nav-link active" aria-current="page" href="../templates/index.html">The Process</a>
               <a class="nav-link" href="../Resources/voting.html">Sentiment Voting</a>
               <a class="nav-link" href="../Resources/statistics.html">Statistics</a>
             </div>
@@ -31,7 +31,42 @@
         </div>
     </nav>
 
- 
+    <div class="container">
+        <div class="row justify-content-center">
+            <!-- display tweet here -->
+            <div class="col-md-10">
+                <div class="tweetholder"></div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <button type="button" class="btn btn-dark" 
+                    style="margin: 10px;" onclick="updateTweet()">Grab A New Tweet</button>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-9 secondBox">
+                <h1 class="modelPredict" style="text-align: center;padding-top:20px"></h1>
+                <hr style="margin-top: 10px;">
+                <h1 style="text-align: center;padding-top:20px;">What do you think?</h1>
+            </div>
+        </div>
+        <div class="row justify-content-center" style="margin-top: 20px;">
+            <div class="col-md-5">
+                <img src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/285/frowning-face_2639-fe0f.png" 
+                        onclick="clickedFace('Negative')" alt="Frowning Face" 
+                        style="width:300px; height:300px; ">
+            </div>
+            <div class="col-md-5">
+                <img src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/285/slightly-smiling-face_1f642.png" 
+                         onclick="clickedFace('Positive')" alt="Smiling Face" 
+                        style="width:300px; height:300px;">
+            </div>
+        </div>
+    
+    
+    
+    </div>  
 
     <!-- jQUery -->
     <!-- <script src="{{ url_for('static', filename='jquery.js') }}"></script> -->
