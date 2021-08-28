@@ -2,6 +2,8 @@
 
 created by Danielle Martin, Jordan Roessle, Robert Gramlich, Sunwoo Kim
 
+![Twitter Sentiment Image](https://miro.medium.com/max/1400/1*0P55fknrgWKxG0gfwAGCvw.png)
+
 <!-- TABLE OF CONTENTS -->
 <details open="open">
   <summary><h2 style="display: inline-block">Table of Contents</h2></summary>
