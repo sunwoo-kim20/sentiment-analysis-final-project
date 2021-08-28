@@ -49,6 +49,3 @@ def lema(df,column):
     final_df = pd.DataFrame()
     final_df['joined_lemm'] = df['joined_lemm']
     return final_df
-
-
-predictModel('this is a tweet to test ')
