@@ -29,5 +29,20 @@ function updatePrediction(choice) {
     d3.select(".modelPredict").text(`Our model predicts this tweet has a ${choice} sentiment.`)
 }
 
+url = 'https://publish.twitter.com/oembed?https://twitter.com/Interior/status/'
+
+function embedTweet() {
+    d3.json("/apicall").then(data =>{
+        var tweetID = data.tweetID.toString()
+        d3.select(".tweetholder").append("a")
+            .attr("href", "url"+tweetID)
+
+        twttr.widgets.load(
+            document.getElementByClassName("tweetholder")
+        )
+        
+    })
+}
+
 // grab a tweet when webpage is opened
 updateTweet();
