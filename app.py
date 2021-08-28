@@ -29,11 +29,11 @@ rds_connection_string = "postgres:password@localhost:5432/sentiment_db"
 Base = declarative_base()
 # Create class for updating data
 class Tweet(Base):
-    __tablename__ = 'tweet'
-    id = Column(BigInteger, primary_key=True)
-    tweet = Column(String())
-    sentiments = Column(Integer)
-    predicted_sentiments = Column(Integer)
+	__tablename__ = 'tweet'
+	id = Column(BigInteger, primary_key=True)
+	tweet = Column(String())
+	sentiments = Column(Integer)
+	predicted_sentiments = Column(Integer)
 	time_data_inserted = Column(Date)
 
 
