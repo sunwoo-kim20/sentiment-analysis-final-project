@@ -76,7 +76,7 @@ To get a local copy up and running follow these simple steps.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-This application allows users to grab a tweet based on a keyword and select whether they consider the tweet to be positive or negative in sentiment. The sentiment analysis model then makes a prediction on the same tweet thereafter. 
+User grabs a tweet by giving the keyword selection an input. Once the tweet has been loaded onto the webpage, the user selects whether they consider the tweet to be positive or negative in sentiment. The model then makes a prediction on the same tweet thereafter to compare to the user's selection. 
 
 ![Screenshot of Sentiment Analysis Application]()
 
