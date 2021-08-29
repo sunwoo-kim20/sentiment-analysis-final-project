@@ -91,14 +91,17 @@ def positive_update():
 
 	# Create connection to SQL database
 	conn = engine.connect()
+	print(tweet_dict['id'])
 
 	# Create object update
 	tweet_update = (
 		update(tweet_data).
-		where(tweet_data.c.id == tweet_dict.id).
-		values(sentiments=tweet_dict.sentiments, time_data_inserted=tweet_dict.time_data_inserted)
+		where(tweet_data.c.id == tweet_dict['id']).
+		values(sentiments=tweet_dict['sentiments'], time_data_inserted=tweet_dict['time_data_inserted'])
 	)
 	conn.execute(tweet_update)
+
+	return {}
 
 @app.route("/negative_update")
 def negative_update():
@@ -109,14 +112,16 @@ def negative_update():
 
 	# Create connection to SQL database
 	conn = engine.connect()
-
+	print(tweet_dict['id'])
 	# Create object update
 	tweet_update = (
 		update(tweet_data).
-		where(tweet_data.c.id == tweet_dict.id).
-		values(sentiments=tweet_dict.sentiments, time_data_inserted=tweet_dict.time_data_inserted)
+		where(tweet_data.c.id == tweet_dict['id']).
+		values(sentiments=tweet_dict['sentiments'], time_data_inserted=tweet_dict['time_data_inserted'])
 	)
 	conn.execute(tweet_update)
+
+	return {}
 
 	# tweet_data['time_data_inserted'] = datetime.now()
 	# tweet_data['sentiment'] = 0
