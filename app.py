@@ -59,6 +59,7 @@ def load_tweet():
 	conn = engine.connect()
 	df = pd.read_sql_query('select * from tweet_data WHERE tweet_data.sentiments = 9', con=conn)
 	df = df.iloc[0]
+	global tweet_dict
 	tweet_dict = {
 		"id":df['id'],
 		"tweet":df['tweet'],
@@ -146,7 +147,7 @@ def datacalled():
             'sentiments':sentiments[i],
             'predicted_sentiments':predicted_sentiments[i]
 		})
-		
+
 	return jsonify(data_list)
 
 if __name__ == "__main__":
