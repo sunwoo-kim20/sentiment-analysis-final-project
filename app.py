@@ -82,6 +82,7 @@ def load_tweet():
 
 @app.route("/positive_update")
 def positive_update():
+	global tweet_dict
 	# tweetID = request.form['tweetid']
 	# tweet_dict['id'] = tweetID
 	tweet_dict['time_data_inserted'] = datetime.now()
@@ -101,6 +102,7 @@ def positive_update():
 
 @app.route("/negative_update")
 def negative_update():
+	global tweet_dict
 	tweet_dict['time_data_inserted'] = datetime.now()
 	tweet_dict['sentiment'] = 0
 	print(tweet_dict)
