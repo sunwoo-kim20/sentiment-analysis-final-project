@@ -86,7 +86,7 @@ def positive_update():
 	# tweetID = request.form['tweetid']
 	# tweet_dict['id'] = tweetID
 	tweet_dict['time_data_inserted'] = datetime.now()
-	tweet_dict['sentiment'] = 1
+	tweet_dict['sentiments'] = 1
 	print(tweet_dict)
 
 	# Create connection to SQL database
@@ -104,7 +104,7 @@ def positive_update():
 def negative_update():
 	global tweet_dict
 	tweet_dict['time_data_inserted'] = datetime.now()
-	tweet_dict['sentiment'] = 0
+	tweet_dict['sentiments'] = 0
 	print(tweet_dict)
 
 	# Create connection to SQL database
