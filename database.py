@@ -33,7 +33,7 @@ tweet = Table(
    Column('tweet', String, default='NaN'), 
    Column('sentiments', Integer, default='NaN'),
    Column('predicted_sentiments', Integer, default='NaN'),
-   Column('time_data_insterted', Date, default='NaN') 
+   Column('time_data_inserted', Date, default='NaN') 
 )
 
 meta.create_all(engine)
