@@ -1,3 +1,5 @@
+var tweetID
+
 function clickedFace(choice) {
     // call route to give vote to flask 
     if (choice === 'Positive') {
@@ -6,17 +8,21 @@ function clickedFace(choice) {
     if (choice === 'Negative') {
         d3.json('/negative_update').then(unused => {})
     }
+    // reset tweetID in preparation for next tweet
+    tweetID = ''
     // update tweet
     updateTweet();
 }
 
 function updateTweet() {
-    d3.json("/apicall").then(data =>{
+    d3.json("/load_tweet").then(data =>{
         d3.select(".tweetholder").text(data.tweet)
+        d3.select("#tweetid").text(data.id)
         console.log(data)
+        tweetID = data.id
         var prediction;
-        console.log(data.sentiment)
-        if (data.sentiment >= .5) {
+        console.log(data.sentiments)
+        if (data.sentiments >= .5) {
             prediction = "POSITIVE"
         }
         else {
@@ -28,21 +34,6 @@ function updateTweet() {
 
 function updatePrediction(choice) {
     d3.select(".modelPredict").text(`Our model predicts this tweet has a ${choice} sentiment.`)
-}
-
-url = 'https://publish.twitter.com/oembed?https://twitter.com/Interior/status/'
-
-function embedTweet() {
-    d3.json("/apicall").then(data =>{
-        var tweetID = data.tweetID.toString()
-        d3.select(".tweetholder").append("a")
-            .attr("href", "url"+tweetID)
-
-        twttr.widgets.load(
-            document.getElementByClassName("tweetholder")
-        )
-        
-    })
 }
 
 // grab a tweet when webpage is opened
