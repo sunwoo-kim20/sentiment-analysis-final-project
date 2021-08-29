@@ -79,10 +79,10 @@ def load_tweet():
 
 	return jsonify(tweet_dict)
 
-@app.route("/positive_update", methods=['POST'])
+@app.route("/positive_update")
 def positive_update():
-	tweetID = request.form['tweetid']
-	tweet_dict['id'] = tweetID
+	# tweetID = request.form['tweetid']
+	# tweet_dict['id'] = tweetID
 	tweet_dict['time_data_inserted'] = datetime.now()
 	tweet_dict['sentiment'] = 1
 	print(tweet_dict)
@@ -98,10 +98,8 @@ def positive_update():
 	)
 	conn.execute(tweet_update)
 
-@app.route("/negative_update", methods=['POST'])
+@app.route("/negative_update")
 def negative_update():
-	tweetID = request.form['tweetid']
-	tweet_dict['id'] = tweetID
 	tweet_dict['time_data_inserted'] = datetime.now()
 	tweet_dict['sentiment'] = 0
 	print(tweet_dict)
