@@ -13,6 +13,7 @@ function clickedFace(choice) {
 function updateTweet() {
     d3.json("/apicall").then(data =>{
         d3.select(".tweetholder").text(data.tweet)
+        console.log(data)
         var prediction;
         console.log(data.sentiment)
         if (data.sentiment >= .5) {
