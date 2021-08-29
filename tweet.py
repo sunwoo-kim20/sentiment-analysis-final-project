@@ -1,7 +1,7 @@
 import json
 import requests
 from config import token
-from sqlalchemy import Table, Column, Integer, String, MetaData, Date, create_engine, insert, Float
+from sqlalchemy import Table, Column, String, MetaData, Date, create_engine, insert, Float, SmallInteger
 from sqlalchemy.ext.declarative import declarative_base
 
 rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
@@ -14,7 +14,7 @@ tweet_data = Table(
    'tweet_data', meta, 
    Column('id', String, primary_key = True), 
    Column('tweet', String), 
-   Column('sentiments', Integer),
+   Column('sentiments', SmallInteger),
    Column('predicted_sentiments', Float),
    Column('time_data_inserted', Date) 
 )
