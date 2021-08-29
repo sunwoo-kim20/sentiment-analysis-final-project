@@ -8,6 +8,7 @@ import os
 import json
 from modelPredict import predictModel
 from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Float, BigInteger, Date
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -24,6 +25,15 @@ tweet_data= {}
 # Create database connection String
 rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
 
+Base = declarative_base()
+# Create class for updating data
+class Tweet(Base):
+	__tablename__ = 'tweet'
+	id = Column(BigInteger, primary_key=True)
+	tweet = Column(String())
+	sentiments = Column(Integer)
+	predicted_sentiments = Column(Integer)
+	time_data_inserted = Column(Date)
 
 @app.route("/")
 def home():
