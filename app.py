@@ -15,10 +15,6 @@ import tweet
 # initialize flask
 app = Flask(__name__)
 
-
-# Initialize global variable
-tweet_dict= {}
-
 # Create database connection String
 rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
@@ -49,7 +45,7 @@ def load_tweet():
 
 	df = pd.read_sql_query('select * from tweet_data WHERE tweet_data.sentiments = 9', con=conn)
 	df = df.iloc[0]
-	global tweet_dict
+	
 	tweet_dict = {
 		"id":df['id'],
 		"tweet":df['tweet'],
@@ -69,13 +65,21 @@ def load_tweet():
 
 	return jsonify(tweet_dict)
 
-@app.route("/positive_update")
+
+@app.route("/positive_update", methods = ['POST'])
 def positive_update():
-	global tweet_dict
-
-	tweet_dict['time_data_inserted'] = datetime.now()
-	tweet_dict['sentiments'] = 1
-
+	# Try to grab values, will catch if someone clicks on face before a tweet loads
+	try:
+		tweet_dict = {
+			"id": request.form['id'],
+			"tweet": request.form['tweet'],
+			"sentiments": 1,
+			"predicted_sentiments": request.form["predicted_sentiments"],
+			"time_data_inserted": datetime.now()
+		}
+	except:
+		return {}
+	
 	# Create connection to SQL database
 	conn = engine.connect()
 
@@ -86,14 +90,21 @@ def positive_update():
 		values(sentiments=tweet_dict['sentiments'], time_data_inserted=tweet_dict['time_data_inserted'])
 	)
 	conn.execute(tweet_update)
-
 	return {}
 
-@app.route("/negative_update")
+@app.route("/negative_update", methods = ['POST'])
 def negative_update():
-	global tweet_dict
-	tweet_dict['time_data_inserted'] = datetime.now()
-	tweet_dict['sentiments'] = 0
+	# Try to grab values, will catch if someone clicks on face before a tweet loads
+	try:
+		tweet_dict = {
+			"id": request.form['id'],
+			"tweet": request.form['tweet'],
+			"sentiments": 0,
+			"predicted_sentiments": request.form["predicted_sentiments"],
+			"time_data_inserted": datetime.now()
+		}
+	except:
+		return {}
 
 	# Create connection to SQL database
 	conn = engine.connect()
@@ -105,7 +116,6 @@ def negative_update():
 		values(sentiments=tweet_dict['sentiments'], time_data_inserted=tweet_dict['time_data_inserted'])
 	)
 	conn.execute(tweet_update)
-
 	return {}
 
 @app.route("/data")
