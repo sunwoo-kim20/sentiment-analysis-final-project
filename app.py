@@ -69,7 +69,6 @@ def load_tweet():
 	}
 
 	tweet_dict['predicted_sentiments'] = predictModel(tweet_dict['tweet'])
-	print(tweet_dict)
 
 	update_db = (
 		update(tweet_data).
@@ -87,11 +86,9 @@ def positive_update():
 	# tweet_dict['id'] = tweetID
 	tweet_dict['time_data_inserted'] = datetime.now()
 	tweet_dict['sentiments'] = 1
-	print(tweet_dict)
 
 	# Create connection to SQL database
 	conn = engine.connect()
-	print(tweet_dict['id'])
 
 	# Create object update
 	tweet_update = (
@@ -108,11 +105,10 @@ def negative_update():
 	global tweet_dict
 	tweet_dict['time_data_inserted'] = datetime.now()
 	tweet_dict['sentiments'] = 0
-	print(tweet_dict)
 
 	# Create connection to SQL database
 	conn = engine.connect()
-	print(tweet_dict['id'])
+	
 	# Create object update
 	tweet_update = (
 		update(tweet_data).

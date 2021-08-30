@@ -17,11 +17,8 @@ function clickedFace(choice) {
 function updateTweet() {
     d3.json("/load_tweet").then(data =>{
         d3.select(".tweetholder").text(data.tweet)
-        // d3.select("#tweetid").text(data.id)
-        console.log(data)
         tweetID = data.id
         var prediction;
-        console.log(data.sentiments)
         if (data.sentiments >= .5) {
             prediction = "POSITIVE"
         }
