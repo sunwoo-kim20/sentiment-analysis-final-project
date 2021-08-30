@@ -1,10 +1,12 @@
 function clickedFace(choice) {
+    var data = d3.select(".tweetholder").data()[0]
+
     // call route to give vote to flask 
     if (choice === 'Positive') {
-        d3.json('/positive_update').then(unused => {})
+        $.post("/positive_update", data);
     }
     if (choice === 'Negative') {
-        d3.json('/negative_update').then(unused => {})
+        $.post( "/negative_update", data);
     }
 
     // update tweet
@@ -13,7 +15,10 @@ function clickedFace(choice) {
 
 function updateTweet() {
     d3.json("/load_tweet").then(data =>{
-        d3.select(".tweetholder").text(data.tweet)
+        // give data to the tweet and change the tweet text
+        d3.select(".tweetholder").data([data]).text(data.tweet)
+
+        // make prediction 
         var prediction;
         if (data.sentiments >= .5) {
             prediction = "POSITIVE"
