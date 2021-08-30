@@ -8,7 +8,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import MetaData, update, Table
 from sqlalchemy.orm import Session
 from datetime import datetime
-from data import return_data
 from modelPredict import predictModel
 import tweet
 
@@ -111,17 +110,12 @@ def negative_update():
 
 @app.route("/data")
 def datacalled():
-	sentiments,predicted_sentiments,date = return_data()
-	data_list = []
-	holder = len(sentiments)
-	for i in range(holder):
-		data_list.append({
-            'date': date[i],
-            'sentiments':sentiments[i],
-            'predicted_sentiments':predicted_sentiments[i]
-		})
+	conn = engine.connect()
+	
+	df = pd.read_sql_query('select * from tweet_data WHERE tweet_data.sentiments != 9', con=conn)
+	json_data = df.to_json()
 
-	return jsonify(data_list)
+	return json_data
 
 if __name__ == "__main__":
 	app.run(debug=True)
