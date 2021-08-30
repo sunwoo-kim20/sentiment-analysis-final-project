@@ -78,10 +78,10 @@ To get a local copy up and running follow these simple steps.
 
 User grabs a tweet by giving the keyword selection an input. Once the tweet has been loaded onto the webpage, the user selects whether they consider the tweet to be positive or negative in sentiment. The model then makes a prediction on the same tweet thereafter to compare to the user's selection. 
 
-![Screenshot of Sentiment Analysis Application]()
+![Screenshot of Sentiment Analysis Application](https://github.com/sunwoo-kim20/sentiment-analysis-final-project/blob/main/static/images/voting_page.png?raw=true)
 
 
-![Screenshot of Neural Network Structure]()
+![Screenshot of Neural Network Structure](https://github.com/sunwoo-kim20/sentiment-analysis-final-project/blob/main/static/images/the_model.png?raw=true)
 
 
 
