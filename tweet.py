@@ -8,18 +8,9 @@ from sqlalchemy.orm import Session
 rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
 conn = engine.connect()
-Base = declarative_base()
-Base.metadata.create_all(conn)
-meta = MetaData()
-tweet_data = Table(
-   'tweet_data', meta, 
-   Column('id', String, primary_key = True), 
-   Column('tweet', String), 
-   Column('sentiments', SmallInteger),
-   Column('predicted_sentiments', Float),
-   Column('time_data_inserted', Date) 
-)
-meta.create_all(engine)
+
+metadata = MetaData(engine)
+tweet_data = Table('tweet_data', metadata, autoload=True, autoload_with=engine)
 
 keyword1 = '(America OR USA OR United States of America)'
 keyword2 =  ' -is:retweet -is:reply lang:en'
