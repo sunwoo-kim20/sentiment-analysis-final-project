@@ -110,12 +110,20 @@ def negative_update():
 
 @app.route("/data")
 def datacalled():
-	conn = engine.connect()
-	
-	df = pd.read_sql_query('select * from tweet_data WHERE tweet_data.sentiments != 9', con=conn)
-	json_data = df.to_json()
+	session = Session(bind=engine)
+	vals = session.query(tweet_data).filter(tweet_data.c.sentiments != 9).all()
+	data_list = []
+	holder = len(vals)
+	for i in range(holder):
+		data_list.append({
+            'id': vals[i][0],
+			'tweet': vals[i][1],
+			'sentiments': vals[i][2],
+			'predicted_sentiments': vals[i][3],
+			'date': vals[i][4],
+		})
 
-	return json_data
+	return jsonify(data_list)
 
 if __name__ == "__main__":
 	app.run(debug=True)
