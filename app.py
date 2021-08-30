@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from data import return_data
 from modelPredict import predictModel
-# import tweet
+import tweet
 
 
 # initialize flask
@@ -27,17 +27,6 @@ engine = create_engine(f'postgresql://{rds_connection_string}')
 metadata = MetaData(engine)
 tweet_data = Table('tweet_data', metadata, autoload=True, autoload_with=engine)
 
-
-# Base = declarative_base()
-# # Create class for updating data
-# class Tweet(Base):
-# 	__tablename__ = 'tweet_data'
-# 	id = Column(String, primary_key=True)
-# 	tweet = Column(String())
-# 	sentiments = Column(Integer)
-# 	predicted_sentiments = Column(Integer)
-# 	time_data_inserted = Column(Date)
-
 @app.route("/")
 def home():
 	return render_template("index.html")
@@ -50,13 +39,15 @@ def voting():
 def statistics():
 	return render_template("statistics.html")
 
-# @app.route("/apicall")
-# def apicalled():
-# 	tweet.api_call()
-
 @app.route("/load_tweet")
 def load_tweet():
 	conn = engine.connect()
+	session = Session(bind=engine)
+	available_tweets = session.query(tweet_data).filter(tweet_data.c.sentiments == 9).count()
+	print(available_tweets)
+	if available_tweets == 0:
+		tweet.api_call()
+
 	df = pd.read_sql_query('select * from tweet_data WHERE tweet_data.sentiments = 9', con=conn)
 	df = df.iloc[0]
 	global tweet_dict
@@ -82,8 +73,7 @@ def load_tweet():
 @app.route("/positive_update")
 def positive_update():
 	global tweet_dict
-	# tweetID = request.form['tweetid']
-	# tweet_dict['id'] = tweetID
+
 	tweet_dict['time_data_inserted'] = datetime.now()
 	tweet_dict['sentiments'] = 1
 
@@ -118,26 +108,6 @@ def negative_update():
 	conn.execute(tweet_update)
 
 	return {}
-
-	# tweet_data['time_data_inserted'] = datetime.now()
-	# tweet_data['sentiment'] = 0
-
-	# # Create connection to SQL database
-	# engine = create_engine(f'postgresql://{rds_connection_string}')
-	# conn = engine.connect()
-	# session = Session(bind = engine)
-
-	# # Create tweet instance
-	# tweet_upload = Tweet(
-	# 	id = tweet_data.id,
-	# 	tweet = tweet_data.tweet,
-	# 	sentiments = tweet_data.sentiment,
-	# 	predicted_sentiments = tweet_data.predicted_sentiments,
-	# 	time_data_inserted = tweet_data.time_data_inserted)
-
-	# # Add new instance to database
-	# session.add(tweet_upload)
-	# session.commit()
 
 @app.route("/data")
 def datacalled():
