@@ -51,6 +51,7 @@ def api_call():
         conn = engine.connect()
         session = Session(bind=engine)
         unique_tweet = session.query(tweet_data).filter(tweet_data.c.id == response['id']).count()
+        session.close()
         if(unique_tweet == 0):
             tweets.append( {'id': response['id'], 'tweet': response['text'], 'sentiment': ''})
         
