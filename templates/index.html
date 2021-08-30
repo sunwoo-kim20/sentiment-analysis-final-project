@@ -34,24 +34,54 @@
         </div>
     </nav>
 
-    <div class="container">
-      <div class="px-4 py-5 my-5 text-center headerBox">
+    <div class="container headerBox">
+      <div class="px-4 py-5 my-5 text-center">
         <img class="d-block mx-auto mb-4" src="../Resources/images/cover_photo.png" alt="Cover Photo" width="225" height="100">
         <h1 class="display-5 fw-bold">Twitter Sentiment Analysis Model</h1>
         <div class="col-lg-6 mx-auto">
-          <p class="lead mb-4"><b>This project aims to create a neural network that can predict the sentiment of tweets from Twitter.</b> <br>
             Created by: Danielle Martin, Jordan Roessle, Robert Gramlich, and Sunwoo Kim</p>
         </div>
       </div>
     </div>
 
+    <div class="container col-xxl-8 px-4 py-5 processBox">
+      <h1 class="display-5 fw-bold" style="text-align: center;">The Process</h1>
+      <p class="lead mb-4 text-center">This project aims to create a neural network that can predict the sentiment of tweets from Twitter.
+      <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+        <div class="col-10 col-sm-8 col-lg-6">
+          <a href="https://github.com/sunwoo-kim20/sentiment-analysis-final-project/blob/main/isolated_model.py" target="_blank">
+          <img src="../Resources/images/the_model.PNG" class="d-block mx-lg-auto img-fluid pointer" alt="The Model" width="700" height="500" loading="lazy">
+          </a>
+        </div>
+        <div class="col-lg-6">
+          <h1 class="display-6 fw-bold lh-1 mb-3">The Model</h1>
+          <p class="lead">The model is trained and tested on an IMDB movie reviews dataset with prescribed positive or negative rankings. <br>
+            Click on the code snippet to see the full code in GitHub.</p>
+        </div>
+      </div>
+      <div class="row flex-lg-row align-items-center g-5 py-5">
+        <div class="col-10 col-sm-8 col-lg-6">
+          <a href="https://github.com/sunwoo-kim20/sentiment-analysis-final-project/blob/main/tweet.py" target="_blank">
+          <img src="../Resources/images/api_call.PNG" class="d-block mx-lg-auto img-fluid pointer" alt="The Model" width="700" height="500" loading="lazy">
+          </a>
+        </div>
+        <div class="col-lg-6">
+          <h1 class="display-6 fw-bold lh-1 mb-3">The API Call</h1>
+          <p class="lead">Once the model was trained on the IMDB data, we were ready to start using it on other types of data. 
+            We used Twitters API to call 10 tweets at a time. These tweets are then added to a SQL database for future use. <br> 
+            Click on the code snippet to see the full code in GitHub.</p>
+        </div>
+      </div>
+    </div>
+
     <div class="container col-xxl-8 px-4 py-5 howToBox">
+      <h1 class="display-5 fw-bold" style="text-align: center;">We Need You!</h1>
       <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
         <div class="col-10 col-sm-8 col-lg-6">
           <img src="../Resources/images/voting_page.png" class="d-block mx-lg-auto img-fluid" alt="Voting Page" width="700" height="500" loading="lazy">
         </div>
         <div class="col-lg-6">
-          <h1 class="display-5 fw-bold lh-1 mb-3" style="text-align: center;">We need you!</h1>
+          
           <p class="lead">Want to be part of the action? We need your help to continue training the model. It's simple:</p>
           <p class="lead"><b>Step 1:</b> Head on over to our Sentiment Voting page <br>
             <b>Step 2:</b> Read the tweet displayed at the top of the page <br>
@@ -60,11 +90,11 @@
           <p class="lead"> Having a hard time deciding? That's okay! These close call tweets can go either way. Just vote how you feel.<br>
             If it is truly a neutral post, or does not contain enough actual text to illicit a sentiment, feel free to skip to the next tweet.
           </p>
-          <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-             <button type="button" class="btn btn-outline-secondary btn-lg px-4" href="/voting">Start Voting <i class="bi bi-arrow-right-circle-fill"></i></button>
-          </div>
         </div>
       </div>
+      <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+        <button type="button" class="btn btn-outline-secondary btn-lg px-4" href="/voting">Start Voting <i class="bi bi-arrow-right-circle-fill"></i></button>
+     </div>
     </div>
 
     <!-- D3 JavaScript -->
