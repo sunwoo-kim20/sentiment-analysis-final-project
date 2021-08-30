@@ -1,5 +1,3 @@
-var tweetID
-
 function clickedFace(choice) {
     // call route to give vote to flask 
     if (choice === 'Positive') {
@@ -8,8 +6,7 @@ function clickedFace(choice) {
     if (choice === 'Negative') {
         d3.json('/negative_update').then(unused => {})
     }
-    // reset tweetID in preparation for next tweet
-    tweetID = ''
+
     // update tweet
     updateTweet();
 }
@@ -17,7 +14,6 @@ function clickedFace(choice) {
 function updateTweet() {
     d3.json("/load_tweet").then(data =>{
         d3.select(".tweetholder").text(data.tweet)
-        tweetID = data.id
         var prediction;
         if (data.sentiments >= .5) {
             prediction = "POSITIVE"
