@@ -58,4 +58,3 @@ def api_call():
                 "time_data_inserted":'1/1/01'}]) 
     return tweets
 
-api_call()
