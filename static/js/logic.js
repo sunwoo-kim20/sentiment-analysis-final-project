@@ -1,6 +1,6 @@
 function clickedFace(choice) {
     var data = d3.select(".tweetholder").data()[0]
-
+    
     // call route to give vote to flask 
     if (choice === 'Positive') {
         $.post("/positive_update", data);

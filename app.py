@@ -40,6 +40,7 @@ def load_tweet():
 	conn = engine.connect()
 	session = Session(bind=engine)
 	available_tweets = session.query(tweet_data).filter(tweet_data.c.sentiments == 9).count()
+	session.close()
 	print(available_tweets)
 	if available_tweets == 0:
 		tweet.api_call()
