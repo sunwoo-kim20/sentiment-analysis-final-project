@@ -81,7 +81,7 @@ User grabs a tweet by giving the keyword selection an input. Once the tweet has 
 ![Screenshot of Sentiment Analysis Application](https://github.com/sunwoo-kim20/sentiment-analysis-final-project/blob/main/static/images/voting_page.png?raw=true)
 
 
-![Screenshot of Neural Network Structure](https://github.com/sunwoo-kim20/sentiment-analysis-final-project/blob/main/static/images/the_model.png?raw=true)
+![Screenshot of Neural Network Structure](https://github.com/sunwoo-kim20/sentiment-analysis-final-project/blob/main/static/images/the_model.PNG?raw=true)
 
 
 
