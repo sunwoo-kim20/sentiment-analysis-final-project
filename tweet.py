@@ -3,6 +3,7 @@ import requests
 from config import token
 from sqlalchemy import Table, Column, String, MetaData, Date, create_engine, insert, Float, SmallInteger
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Session
 
 rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
@@ -47,8 +48,12 @@ def api_call():
     tweets = []
     json_response = connect_to_endpoint(search_url, query_params)
     for response in json_response['data']:
-        tweets.append( {'id': response['id'], 'tweet': response['text'], 'sentiment': ''})
         conn = engine.connect()
+        session = Session(bind=engine)
+        unique_tweet = session.query(tweet_data).filter(tweet_data.c.id == response['id']).count()
+        if(unique_tweet == 0):
+            tweets.append( {'id': response['id'], 'tweet': response['text'], 'sentiment': ''})
+        
 
         with conn:
             conn.execute(insert(tweet_data),[{"id":response['id'],
@@ -57,4 +62,3 @@ def api_call():
                 "predicted_sentiments":9,
                 "time_data_inserted":'1/1/01'}]) 
     return tweets
-

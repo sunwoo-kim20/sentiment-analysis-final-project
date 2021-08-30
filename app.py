@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from modelPredict import predictModel
 import tweet
+import database
 
 
 # initialize flask
