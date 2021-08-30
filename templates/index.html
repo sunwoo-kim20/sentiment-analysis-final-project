@@ -56,27 +56,64 @@
         <div class="col-lg-6">
           <h1 class="display-6 fw-bold lh-1 mb-3">The Model</h1>
           <p class="lead">The model is trained and tested on an IMDB movie reviews dataset with prescribed positive or negative rankings. <br>
-            Click on the code snippet to see the full code in GitHub.</p>
+            Click on the code snippet to see the full model in GitHub.</p>
         </div>
       </div>
       <div class="row flex-lg-row align-items-center g-5 py-5">
         <div class="col-10 col-sm-8 col-lg-6">
           <a href="https://github.com/sunwoo-kim20/sentiment-analysis-final-project/blob/main/tweet.py" target="_blank">
-          <img src="../static/images/api_call.PNG" class="d-block mx-lg-auto img-fluid pointer" alt="The Model" width="700" height="500" loading="lazy">
+          <img src="../static/images/api_call.PNG" class="d-block mx-lg-auto img-fluid pointer" alt="The API Call" width="700" height="500" loading="lazy">
           </a>
         </div>
         <div class="col-lg-6">
           <h1 class="display-6 fw-bold lh-1 mb-3">The API Call</h1>
           <p class="lead">Once the model was trained on the IMDB data, we were ready to start using it on other types of data. 
-            We used Twitters API to call 10 tweets at a time. These tweets are then added to a SQL database for future use. <br> 
-            Click on the code snippet to see the full code in GitHub.</p>
+            We used Twitter's API to call 10 tweets at a time. These tweets are then inserted into our SQL database for future use. <br> 
+            Click on the code snippet to see the full API call and database load in GitHub.</p>
+        </div>
+      </div>
+      <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+        <div class="col-10 col-sm-8 col-lg-6">
+          <a href="https://github.com/sunwoo-kim20/sentiment-analysis-final-project/blob/main/app.py" target="_blank">
+          <img src="../static/images/flask_app.PNG" class="d-block mx-lg-auto img-fluid pointer" alt="The Flask App" width="700" height="500" loading="lazy">
+          </a>
+        </div>
+        <div class="col-lg-6">
+          <h1 class="display-6 fw-bold lh-1 mb-3">Serving it Up</h1>
+          <p class="lead">The model and api call come together in a Flask app. <br> 
+            Click on the code snippet to see the full Flask App in GitHub.</p>
+        </div>
+      </div>
+      <div class="row flex-lg-row align-items-center g-5 py-5">
+        <div class="col-10 col-sm-8 col-lg-6">
+          <a href="https://github.com/sunwoo-kim20/sentiment-analysis-final-project/blob/main/modelPredict.py" target="_blank">
+          <img src="../static/images/javascript.PNG" class="d-block mx-lg-auto img-fluid pointer" alt="JavaScript" width="700" height="500" loading="lazy">
+          </a>
+        </div>
+        <div class="col-lg-6">
+          <h1 class="display-6 fw-bold lh-1 mb-3">Getting Interactive</h1>
+          <p class="lead">A tweet is loaded from the database to our Sentiment Voting page. From here, users have the ability to vote on the tweet as well.
+            These votes are stored in the database for future model retraining and analysis.<br>
+            Click on the code snippet to see the full JavaScript in GitHub.</p>
+        </div>
+      </div>
+      <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+        <div class="col-10 col-sm-8 col-lg-6">
+          <a href="https://github.com/sunwoo-kim20/sentiment-analysis-final-project/blob/main/modelPredict.py" target="_blank">
+          <img src="../static/images/tweet_model.PNG" class="d-block mx-lg-auto img-fluid pointer" alt="The Model" width="700" height="500" loading="lazy">
+          </a>
+        </div>
+        <div class="col-lg-6">
+          <h1 class="display-6 fw-bold lh-1 mb-3">Feeding The Model</h1>
+          <p class="lead">When a tweet is loaded to the voting page, it is cleaned and fed to the model to predict a sentiment level between 0-1. Our model's prediction can be seen on the voting page. <br>
+            Click on the code snippet to see the full predict model in GitHub.</p>
         </div>
       </div>
     </div>
 
     <div class="container col-xxl-8 px-4 py-5 howToBox">
       <h1 class="display-5 fw-bold" style="text-align: center;">We Need You!</h1>
-      <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+      <div class="row flex-lg-row align-items-center g-5 py-5">
         <div class="col-10 col-sm-8 col-lg-6">
           <img src="../static/images/voting_page.png" class="d-block mx-lg-auto img-fluid" alt="Voting Page" width="700" height="500" loading="lazy">
         </div>
