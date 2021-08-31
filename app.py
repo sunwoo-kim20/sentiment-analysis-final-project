@@ -9,8 +9,9 @@ from sqlalchemy import MetaData, update, Table
 from sqlalchemy.orm import Session
 from datetime import datetime
 from modelPredict import predictModel
-import tweet
 import database
+import tweet
+
 
 
 # initialize flask
