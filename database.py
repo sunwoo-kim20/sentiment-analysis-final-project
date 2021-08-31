@@ -17,12 +17,10 @@ if not engine.has_table(engine, "stats_data"):  # If table don't exist, Create.
     meta = MetaData()
     # Create a table with the appropriate Columns"
     stats = Table("stats_data", meta,
-          Column('Id', Integer, primary_key=True, nullable=False), 
+          Column('Id', String, primary_key=True, nullable=False), 
           Column('Date', Date), 
-          Column('sentiments', Integer),
-          Column('predicted_sentiments', Float), 
-          Column('Precison', Float),
-          Column('Accuracy', Float)
+          Column('Precision', Float),
+          Column('Recall', Float)
                  )
     # Implement the creation
     meta.create_all(engine)
