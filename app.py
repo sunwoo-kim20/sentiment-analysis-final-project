@@ -122,6 +122,7 @@ def negative_update():
 
 @app.route("/data")
 def datacalled():
+	import stats
 	session = Session(bind=engine)
 	vals = session.query(tweet_data).filter(tweet_data.c.sentiments != 9).all()
 	data_list = []
