@@ -19,11 +19,6 @@ if os.path.isfile(strFile):
 def plot_cm(labels, predictions, p=0.5):
     cm = confusion_matrix(labels, predictions > p)
     steve = []
-    steve.append(f'(True Negatives): {cm[0][0]}')
-    steve.append(f'(False Negatives): {cm[1][0]}')
-    steve.append(f'(True Positives): {cm[1][1]}')
-    steve.append(f'(False Positives): {cm[0][1]}')
-    steve.append(f'TotalTransactions: {np.sum(cm[1])}')
     steve.append(f'precision: {cm[1][1]/(cm[1][1] + cm[0][1])}')
     steve.append(f'recall: {cm[1][1]/(cm[1][1] + cm[1][0])}')
 
