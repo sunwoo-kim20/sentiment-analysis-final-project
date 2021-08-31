@@ -35,27 +35,35 @@
         </div>
     </nav>
 
-
-    <div class="container" style="background-color: white; height: 100%; opacity: 0.93; bottom: 0;">
-
-      <div class="jumbotron text-center">
-        <h1>Statistical Analysis of Data</h1>
-        <h2>some simple plots</h2>
-      </div>
-      <div class=row>
-      <div class = "col-md-6" style="padding-right: 5px;"></div>
-          <div id = "scatter" style="padding-right: 5px; margin-bottom: 5px;"></div>
-          <a href="#" target="_blank">
-            <img src="../static/images/figure_1.png" alt="" class="d-block mx-lg-auto img-fluid ">
-          </a>
-        </div>
-
-        <div class = "col-md-6" style="padding-right: 5px;">
-          <!--Div container for the bar chart-->
-          <div id = "plot" style="padding-right: 5px; max-width: 100%; margin-right: 5px;"></div>
-        </div>
+    <div class="container headerBox">
+      <div class="px-4 py-5 my-5 text-center">
+        <h1 class="display-5 fw-bold">Statistical Analysis of Data</h1>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead">Some Simple Plots</p>
         </div>
       </div>
+    </div>
+  
+    <div class="container">
+      <div class="row justify-content-center graphBox">
+        <div class="col-md-10">
+            <div id = "scatter"></div>
+        </div>
+      </div>
+      <div class="row justify-content-center imageBox">
+        <a href="#" target="_blank">
+          <img src="../static/images/figure_1.png" alt="" class="d-block mx-lg-auto img-fluid" width="750" height="750" loading="lazy">
+        </a>
+      </div>
+
+    </div>
+    
+    <div class="row justify-content-center barChart">
+      <div class = "col-md-6" style="padding-right: 5px;">
+        <!--Div container for the bar chart-->
+        <div id = "plot" style="padding-right: 5px; max-width: 100%; margin-right: 5px;"></div>
+      </div>
+    </div>
 
     </div>
 
