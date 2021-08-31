@@ -10,6 +10,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
 from sqlalchemy import insert
+import os
+
+strFile = "static/images/figure_1.png"
+if os.path.isfile(strFile):
+    os.remove(strFile)
 
 def plot_cm(labels, predictions, p=0.5):
     cm = confusion_matrix(labels, predictions > p)
@@ -27,7 +32,7 @@ def plot_cm(labels, predictions, p=0.5):
     plt.title(steve)
     plt.ylabel('Actual label')
     plt.xlabel('Predicted label')
-    plt.savefig('static/images/figure_1.png', dpi=300)
+    plt.savefig(strFile, dpi=300)
 
     
     
