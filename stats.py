@@ -11,26 +11,20 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix
 from sqlalchemy import insert
 import os
+# from v_functions import plot_cm, plot_roc, plot_delta_auc, plot_prc, cmFile, rocFile, deltaaucFile, prcFile, colors
+import v_functions
 
-strFile = "static/images/figure_1.png"
-if os.path.isfile(strFile):
-    os.remove(strFile)
+if os.path.isfile(v_functions.cmFile):
+    os.remove(v_functions.cmFile)
+if os.path.isfile(v_functions.rocFile):
+    os.remove(v_functions.rocFile)
+if os.path.isfile(v_functions.deltaaucFile):
+    os.remove(v_functions.deltaaucFile)
+if os.path.isfile(v_functions.prcFile):
+    os.remove(v_functions.prcFile)
 
-def plot_cm(labels, predictions, p=0.5):
-    cm = confusion_matrix(labels, predictions > p)
-    steve = []
-    steve.append(f'precision: {cm[1][1]/(cm[1][1] + cm[0][1])}')
-    steve.append(f'recall: {cm[1][1]/(cm[1][1] + cm[1][0])}')
-
-    plt.figure(figsize=(5,5))
-    sns.heatmap(cm, annot=True, fmt="d")
-    plt.title(steve)
-    plt.ylabel('Actual label')
-    plt.xlabel('Predicted label')
-    plt.savefig(strFile, dpi=300)
-
-    
-    
+colors = v_functions.colors 
+  
 rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
 conn = engine.connect()
@@ -48,10 +42,22 @@ df_stats = pd.read_sql_query('select * from stats_data', con=engine)
 x_predict_test = df['predicted_sentiments']
 y_actual = df['sentiments']
 
-plot_cm(y_actual,x_predict_test)
+v_functions.plot_cm(y_actual,x_predict_test)
 cm = confusion_matrix(y_actual,x_predict_test > .5)
 precision = cm[1][1]/(cm[1][1] + cm[0][1])
 recall = cm[1][1]/(cm[1][1] + cm[1][0])
+
+plt.figure(figsize=(15,7))
+v_functions.plot_roc("ROC", y_actual, x_predict_test, color=colors[0])
+
+plt.figure(figsize=(20,10))
+v_functions.plot_delta_auc("Delta AUC",y_actual,x_predict_test,color=colors[1])
+
+
+plt.figure(figsize=(10,10))
+v_functions.plot_prc("PRC", y_actual, x_predict_test, color=colors[2])
+
+
 
 conn = engine.connect()
 ids = str(len(df_stats))

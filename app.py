@@ -8,7 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import MetaData, update, Table
 from sqlalchemy.orm import Session
 from datetime import datetime
-from modelPredict import predictModel
+from v_functions import predictModel
 import database
 import tweet
 
