@@ -50,6 +50,19 @@ def lema(df,column):
     final_df['joined_lemm'] = df['joined_lemm']
     return final_df
 
+def lema_tweet(df,column):
+    df['body_text_clean'] = df[column].apply(lambda x: remove_punct(x))
+    df['body_text_tokenized'] = df['body_text_clean'].apply(lambda x: tokenize(x.lower()))
+    df['body_text_nostop'] = df['body_text_tokenized'].apply(lambda x: remove_stopwords(x))
+    df['body_text_lemmatized'] = df['body_text_nostop'].apply(lambda x: lemmatizing(x))
+    it_list = []
+    for row in df['body_text_lemmatized']:
+        it_list.append(" ".join(row))
+    df['joined_lemm'] = it_list
+    final_df = pd.DataFrame()
+    final_df['joined_lemm'] = df['joined_lemm']
+    return final_df
+
 def plot_metrics(history):
     metrics = ['loss', 'prc', 'precision', 'recall']
     for n, metric in enumerate(metrics):
@@ -128,7 +141,7 @@ def predictModel(theTweet):
     list_for_vectorize = []
     list_for_vectorize.append(theTweet)
     df = pd.DataFrame({'tweet':list_for_vectorize})
-    clean_df = lema(df, "tweet")
+    clean_df = lema_tweet(df, "tweet")
     with open('vectorizer.pickle', 'rb') as inp:
         vectorize = pickle.load(inp)
         model = load_model('deep_sentiment_model_trained_zenith.h5')
