@@ -4,6 +4,9 @@ from config import token
 from sqlalchemy import Table, Column, String, MetaData, Date, create_engine, insert, Float, SmallInteger
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
+from sqlalchemy import func
+import pandas as pd
+from v_functions import batch_strings, batch_ints
 
 rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
@@ -37,18 +40,49 @@ def connect_to_endpoint(url, params):
 
 def api_call():
     tweets = []
+
     json_response = connect_to_endpoint(search_url, query_params)
+    conn = engine.connect()
+    session = Session(bind=engine)
+    batch_df = pd.read_sql_query('select batch from tweet_data ORDER BY batch DESC LIMIT 1', con=engine)
+    neg = len(pd.read_sql_query('select sentiments from tweet_data WHERE tweet_data.sentiments = 0 LIMIT 1250', con=engine))
+    # neg = session.query(tweet_data).filter(tweet_data.c.sentiments == 0).count()
+    pos = len(pd.read_sql_query('select sentiments from tweet_data WHERE tweet_data.sentiments = 1 LIMIT 1250', con=engine))
+    if session.query(tweet_data).count() == 0:
+        batch = batch_strings['0']
+    else:
+        holder = batch_df['batch'].max()    
+        batch = batch_strings[holder]
+
+    switch = False
+
+    if switch == True:
+        holder = batch_df['batch'].max()
+        modded = batch_ints[holder]
+        if modded%10 == 0:
+            import updateModel
+    elif switch == False:
+        if(neg == 1250) and (pos == 1250):
+            switch = True
+            import updateModel
+
+
+
+
     for response in json_response['data']:
         conn = engine.connect()
         session = Session(bind=engine)
         unique_tweet = session.query(tweet_data).filter(tweet_data.c.id == response['id']).count()
         session.close()
+
+
         if(unique_tweet == 0):
             tweets.append( {'id': response['id'], 'tweet': response['text'], 'sentiment': ''})
-        
 
         with conn:
-            conn.execute(insert(tweet_data),[{"id":response['id'],
+            conn.execute(insert(tweet_data),[{
+                "id":response['id'],
+                "batch":batch,
                 "tweet":response['text'],
                 "sentiments":9,
                 "predicted_sentiments":9,

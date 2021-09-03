@@ -1,5 +1,4 @@
 import pandas as pd
-from sqlalchemy import create_engine
 import sklearn
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
@@ -10,56 +9,27 @@ import numpy as np
 import tensorflow as tf
 import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
-from nltk.corpus import stopwords 
 from tensorflow.keras.models import load_model
-from sklearn.metrics import confusion_matrix
-import seaborn as sns
 from tensorflow import keras
-import string
-import re
 from sklearn.preprocessing import Normalizer
-import pickle
+from sqlalchemy import create_engine
+from sqlalchemy import MetaData, update, Table
+from sqlalchemy.orm import Session
 
+import pickle
+from v_functions import lema
 vectorizer = TfidfVectorizer()
-tfidf_vect = TfidfVectorizer()
-wn = nltk.WordNetLemmatizer()
-string.punctuation
-stop = stopwords.words('english')
+
 
 rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
+metadata = MetaData(engine)
+sentiment_data = Table('sentiment_data', metadata, autoload=True, autoload_with=engine)
+conn = engine.connect()
+session = Session(bind=engine)
 
-df = pd.read_sql_query('select * from sentiment_data', con=engine).iloc[np.random.choice(np.arange(50000), 5000, False)]
+df = pd.read_sql_query('select * from sentiment_data ORDER BY RANDOM() LIMIT 5000', con=engine)
 
-def remove_punct(text):
-    text_nopunct = "".join([char for char in text if char not in string.punctuation])
-    return text_nopunct
-
-def tokenize(text):
-    tokens = re.split('\W+', text)
-    return tokens
-
-def remove_stopwords(tokenized_list):
-    text = [word for word in tokenized_list if word not in stop]# To remove all stopwords
-    return text
-
-def lemmatizing(tokenized_text):
-    text = [wn.lemmatize(word) for word in tokenized_text]
-    return text
-
-def lema(df,column):
-    body_text_clean = df[column].apply(lambda x: remove_punct(x))
-    body_text_tokenized = body_text_clean.apply(lambda x: tokenize(x.lower()))
-    body_text_nostop = body_text_tokenized.apply(lambda x: remove_stopwords(x))
-    df['body_text_lemmatized'] = body_text_nostop.apply(lambda x: lemmatizing(x))
-    it_list = []
-    for row in df['body_text_lemmatized']:
-        it_list.append(" ".join(row))
-    df['joined_lemm'] = it_list
-    final_df = pd.DataFrame()
-    final_df['sentiments'] = df['sentiments']
-    final_df['joined_lemm'] = df['joined_lemm']
-    return final_df
 
 clean_df = lema(df,'text')
 

@@ -11,7 +11,9 @@ from datetime import datetime
 from v_functions import predictModel
 import database
 import tweet
+from multiprocessing import Value
 
+counter = Value('i', 0)
 
 
 # initialize flask
@@ -45,7 +47,6 @@ def load_tweet():
 	print(available_tweets)
 	if available_tweets == 0:
 		tweet.api_call()
-
 	df = pd.read_sql_query('select * from tweet_data WHERE tweet_data.sentiments = 9', con=conn)
 	df = df.iloc[0]
 	

@@ -2,7 +2,7 @@ from sqlalchemy import Table, Column, Integer, String, MetaData, Date
 from sqlalchemy import MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Float, SmallInteger
+from sqlalchemy import Column, Integer, String, Float, SmallInteger, BigInteger
 from sqlalchemy import create_engine
 import pandas as pd
 
@@ -43,7 +43,8 @@ if not engine.has_table(engine, "sentiment_data"):  # If table don't exist, Crea
 if not engine.has_table(engine, "tweet_data"):  # If table don't exist, Create.
     tweet_data = Table(
         'tweet_data', meta, 
-        Column('id', String, primary_key = True), 
+        Column('id', String, primary_key = True),
+        Column("batch", String), 
         Column('tweet', String), 
         Column('sentiments', SmallInteger),
         Column('predicted_sentiments', Float),
