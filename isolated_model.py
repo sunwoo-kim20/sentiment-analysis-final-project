@@ -17,7 +17,7 @@ from sqlalchemy import MetaData, update, Table
 from sqlalchemy.orm import Session
 
 import pickle
-from v_functions import lema
+from v_functions import lema, make_model, METRICS, early_stopping
 vectorizer = TfidfVectorizer()
 
 
@@ -62,52 +62,13 @@ train_features = np.clip(train_features, -5, 5)
 val_features = np.clip(val_features, -5, 5)
 test_features = np.clip(test_features, -5, 5)
 
-METRICS = [
-      keras.metrics.TruePositives(name='tp'),
-      keras.metrics.FalsePositives(name='fp'),
-      keras.metrics.TrueNegatives(name='tn'),
-      keras.metrics.FalseNegatives(name='fn'), 
-      keras.metrics.BinaryAccuracy(name='accuracy'),
-      keras.metrics.Precision(name='precision'),
-      keras.metrics.Recall(name='recall'),
-      keras.metrics.AUC(name='auc'),
-      keras.metrics.AUC(name='prc', curve='PR'), # precision-recall curve
-]
+
+
 
 EPOCHS = 50
 BATCH_SIZE = 2048
 
-early_stopping = tf.keras.callbacks.EarlyStopping(
-    monitor='val_prc', 
-    verbose=1,
-    patience=10,
-    mode='max',
-    restore_best_weights=True)
-
-    
-def make_model(metrics=METRICS, output_bias=None):
-    if output_bias is not None:
-        output_bias = tf.keras.initializers.Constant(output_bias)
-    model = keras.Sequential([
-        keras.layers.Dense(
-            16, activation='relu',
-            input_shape=(train_features.shape[-1],)),
-        keras.layers.Dense(50, activation='relu'),
-        keras.layers.Dense(50, activation='relu'),
-        keras.layers.Dropout(0.5),
-
-        keras.layers.Dense(1, activation='sigmoid',
-                         bias_initializer=output_bias),
-  ])
-
-    model.compile(
-        optimizer=keras.optimizers.Adam(learning_rate=1e-3),
-        loss=keras.losses.BinaryCrossentropy(),
-        metrics=metrics)
-
-    return model
-
-model = make_model()
+model = make_model(train_features)
 baseline_history = model.fit(
     train_features,
     train_labels,

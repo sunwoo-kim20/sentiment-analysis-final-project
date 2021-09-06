@@ -50,19 +50,6 @@ def lema(df,column):
     final_df['joined_lemm'] = df['joined_lemm']
     return final_df
 
-def lema_tweet(df,column):
-    df['body_text_clean'] = df[column].apply(lambda x: remove_punct(x))
-    df['body_text_tokenized'] = df['body_text_clean'].apply(lambda x: tokenize(x.lower()))
-    df['body_text_nostop'] = df['body_text_tokenized'].apply(lambda x: remove_stopwords(x))
-    df['body_text_lemmatized'] = df['body_text_nostop'].apply(lambda x: lemmatizing(x))
-    it_list = []
-    for row in df['body_text_lemmatized']:
-        it_list.append(" ".join(row))
-    df['joined_lemm'] = it_list
-    final_df = pd.DataFrame()
-    final_df['joined_lemm'] = df['joined_lemm']
-    return final_df
-
 def plot_metrics(history):
     metrics = ['loss', 'prc', 'precision', 'recall']
     for n, metric in enumerate(metrics):
@@ -137,6 +124,20 @@ def plot_prc(name, labels, predictions, **kwargs):
     plt.savefig(prcFile, dpi=300)
 #     ax.set_aspect('equal')
 
+def lema_tweet(df,column):
+    df['body_text_clean'] = df[column].apply(lambda x: remove_punct(x))
+    df['body_text_tokenized'] = df['body_text_clean'].apply(lambda x: tokenize(x.lower()))
+    df['body_text_nostop'] = df['body_text_tokenized'].apply(lambda x: remove_stopwords(x))
+    df['body_text_lemmatized'] = df['body_text_nostop'].apply(lambda x: lemmatizing(x))
+    it_list = []
+    for row in df['body_text_lemmatized']:
+        it_list.append(" ".join(row))
+    df['joined_lemm'] = it_list
+    final_df = pd.DataFrame()
+    final_df['joined_lemm'] = df['joined_lemm']
+    return final_df
+
+
 def predictModel(theTweet):
     list_for_vectorize = []
     list_for_vectorize.append(theTweet)
@@ -147,3 +148,56 @@ def predictModel(theTweet):
         model = load_model('deep_sentiment_model_trained_zenith.h5')
         predict_me = vectorize.transform(clean_df['joined_lemm']).toarray()
         return float(model.predict(predict_me)[0][0])
+
+steve = np.arange(0,999999,1)
+batch_strings = {}
+for i in steve:
+    batch_strings[f'{i}'] = f'{i + 1}'
+holder = np.arange(0,999999,1)
+batch_ints = {}
+for i in steve:
+    batch_ints[f'{i}'] = i
+
+
+METRICS = [
+      keras.metrics.TruePositives(name='tp'),
+      keras.metrics.FalsePositives(name='fp'),
+      keras.metrics.TrueNegatives(name='tn'),
+      keras.metrics.FalseNegatives(name='fn'), 
+      keras.metrics.BinaryAccuracy(name='accuracy'),
+      keras.metrics.Precision(name='precision'),
+      keras.metrics.Recall(name='recall'),
+      keras.metrics.AUC(name='auc'),
+      keras.metrics.AUC(name='prc', curve='PR'), # precision-recall curve
+]
+
+
+early_stopping = tf.keras.callbacks.EarlyStopping(
+    monitor='val_prc', 
+    verbose=1,
+    patience=10,
+    mode='max',
+    restore_best_weights=True)
+
+    
+def make_model(train_features, metrics=METRICS, output_bias=None):
+    if output_bias is not None:
+        output_bias = tf.keras.initializers.Constant(output_bias)
+    model = keras.Sequential([
+        keras.layers.Dense(
+            16, activation='relu',
+            input_shape=(train_features.shape[-1],)),
+        keras.layers.Dense(50, activation='relu'),
+        keras.layers.Dense(50, activation='relu'),
+        keras.layers.Dropout(0.5),
+
+        keras.layers.Dense(1, activation='sigmoid',
+                         bias_initializer=output_bias),
+  ])
+
+    model.compile(
+        optimizer=keras.optimizers.Adam(learning_rate=1e-3),
+        loss=keras.losses.BinaryCrossentropy(),
+        metrics=metrics)
+
+    return model  
