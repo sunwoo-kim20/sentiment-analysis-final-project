@@ -28,13 +28,11 @@ sentiment_data = Table('sentiment_data', metadata, autoload=True, autoload_with=
 conn = engine.connect()
 session = Session(bind=engine)
 
-df = pd.read_sql_query('select * from sentiment_data ORDER BY RANDOM() LIMIT 5000', con=engine)
+df = pd.read_sql_query('select sentiments, joined_lemm from sentiment_data ORDER BY RANDOM() LIMIT 5000', con=engine)
 
 
-clean_df = lema(df,'text')
-
-x = clean_df['joined_lemm']
-y = clean_df['sentiments']
+x = df['joined_lemm']
+y = df['sentiments']
 X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
 X_test, X_val, y_test, y_val = train_test_split(X_test, y_test, test_size=0.2)
 vectorizer = TfidfVectorizer()

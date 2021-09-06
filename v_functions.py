@@ -46,6 +46,7 @@ def lema(df,column):
         it_list.append(" ".join(row))
     df['joined_lemm'] = it_list
     final_df = pd.DataFrame()
+    final_df[column] = df[column]
     final_df['sentiments'] = df['sentiments']
     final_df['joined_lemm'] = df['joined_lemm']
     return final_df
