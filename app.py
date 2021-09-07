@@ -8,10 +8,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import MetaData, update, Table
 from sqlalchemy.orm import Session
 from datetime import datetime
-from v_functions import predictModel
-import database
+from v_functions import predictModel, lema_tweet, lema, predictTwtModel, predictComModel
+# import database
 import tweet
 from multiprocessing import Value
+import os
 
 counter = Value('i', 0)
 
@@ -44,26 +45,49 @@ def load_tweet():
 	session = Session(bind=engine)
 	available_tweets = session.query(tweet_data).filter(tweet_data.c.sentiments == 9).count()
 	session.close()
-	print(available_tweets)
+	# print(available_tweets)
 	if available_tweets == 0:
 		tweet.api_call()
 	df = pd.read_sql_query('select * from tweet_data WHERE tweet_data.sentiments = 9', con=conn)
 	df = df.iloc[0]
-	
 	tweet_dict = {
 		"id":df['id'],
 		"tweet":df['tweet'],
 		"sentiments":int(df['sentiments']),
-		"predicted_sentiments":df["predicted_sentiments"],
-		"time_data_inserted":df['time_data_inserted']
+		"joined_lemm":df['joined_lemm'],
+		"predicted_sentiments_rd":df["predicted_sentiments_rd"],
+		"time_data_inserted":df['time_data_inserted'],
+		"predicted_sentiments_twt":df['predicted_sentiments_twt'],
+		"predicted_sentiments_com":df['predicted_sentiments_com']
 	}
 
-	tweet_dict['predicted_sentiments'] = predictModel(tweet_dict['tweet'])
+	tweet_dict['predicted_sentiments_rd'] = predictModel(df)
 
+	if os.path.isfile("deep_sentiment_twitter_model_trained.h5"):
+		conn = engine.connect()
+		tweet_dict['predicted_sentiments_twt'] = predictTwtModel(df)
+		update_db = (
+			update(tweet_data).
+			where(tweet_data.c.id == tweet_dict['id']).
+			values(predicted_sentiments_twt=tweet_dict['predicted_sentiments_twt'])
+		)
+		conn.execute(update_db)
+
+	if os.path.isfile("deep_sentiment_twitter_model_trained.h5"):
+		conn = engine.connect()
+		tweet_dict['predicted_sentiments_twt'] = predictComModel(df)
+		update_db = (
+			update(tweet_data).
+			where(tweet_data.c.id == tweet_dict['id']).
+			values(predicted_sentiments_com=tweet_dict['predicted_sentiments_com'])
+		)
+		conn.execute(update_db)	
+	
+	conn = engine.connect()
 	update_db = (
 		update(tweet_data).
 		where(tweet_data.c.id == tweet_dict['id']).
-		values(predicted_sentiments=tweet_dict['predicted_sentiments'])
+		values(predicted_sentiments_rd=tweet_dict['predicted_sentiments_rd'])
 	)
 	conn.execute(update_db)
 
@@ -78,7 +102,7 @@ def positive_update():
 			"id": request.form['id'],
 			"tweet": request.form['tweet'],
 			"sentiments": 1,
-			"predicted_sentiments": request.form["predicted_sentiments"],
+			"predicted_sentiments_rd": request.form["predicted_sentiments_rd"],
 			"time_data_inserted": datetime.now()
 		}
 	except:
@@ -104,7 +128,7 @@ def negative_update():
 			"id": request.form['id'],
 			"tweet": request.form['tweet'],
 			"sentiments": 0,
-			"predicted_sentiments": request.form["predicted_sentiments"],
+			"predicted_sentiments_rd": request.form["predicted_sentiments_rd"],
 			"time_data_inserted": datetime.now()
 		}
 	except:
@@ -134,7 +158,7 @@ def datacalled():
             'id': vals[i][0],
 			'tweet': vals[i][1],
 			'sentiments': vals[i][2],
-			'predicted_sentiments': vals[i][3],
+			'predicted_sentiments_rd': vals[i][3],
 			'date': vals[i][4],
 		})
 
