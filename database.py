@@ -19,8 +19,12 @@ if not engine.has_table(engine, "stats_data"):  # If table don't exist, Create.
     stats = Table("stats_data", meta,
           Column('Id', String, primary_key=True, nullable=False), 
           Column('Date', Date), 
-          Column('Precision', Float),
-          Column('Recall', Float)
+          Column('Precision_rd', Float),
+          Column('Recall_rd', Float),
+          Column('Precision_twt', Float),
+          Column('Recall_twt', Float),
+          Column('Precision_com', Float),
+          Column('Recall_rd_com', Float)
                  )
     # Implement the creation
     meta.create_all(engine)
@@ -49,8 +53,10 @@ if not engine.has_table(engine, "tweet_data"):  # If table don't exist, Create.
         Column("batch", String), 
         Column('tweet', String), 
         Column('sentiments', SmallInteger),
-        Column('predicted_sentiments', Float),
+        Column('predicted_sentiments_rd', Float),
+        Column('predicted_sentiments_twt', Float),
+        Column('predicted_sentiments_com', Float),
         Column('time_data_inserted', Date),
-        Column('joined_lemm', String, default='NaN'), 
+        Column('joined_lemm', String), 
     )
     meta.create_all(engine)    

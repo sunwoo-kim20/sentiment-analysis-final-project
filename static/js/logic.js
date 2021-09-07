@@ -20,7 +20,7 @@ function updateTweet() {
 
         // make prediction 
         var prediction;
-        if (data.sentiments >= .5) {
+        if (data.predicted_sentiments_rd >= .5) {
             prediction = "POSITIVE"
         }
         else {

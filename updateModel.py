@@ -99,11 +99,11 @@ baseline_history = model.fit(
     epochs=EPOCHS,
     validation_data=(val_features, val_labels),
     callbacks=[early_stopping])
+model.save("deep_sentiment_twitter_model_trained.h5", save_format='tf')
 
 
-
-x_com = clean_tweet_df['joined_lemm']
-y_com = clean_tweet_df['sentiments']
+x_com = clean_composite_df['joined_lemm']
+y_com = clean_composite_df['sentiments']
 X_train, X_test, y_train, y_test = train_test_split(x_com, y_com, test_size=0.2)
 X_test, X_val, y_test, y_val = train_test_split(X_test, y_test, test_size=0.2)
 vectorizer = TfidfVectorizer()
@@ -143,3 +143,4 @@ baseline_history = model.fit(
     epochs=EPOCHS,
     validation_data=(val_features, val_labels),
     callbacks=[early_stopping])
+model.save("deep_sentiment_composite_model_trained.h5", save_format='tf')

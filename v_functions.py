@@ -141,15 +141,25 @@ def lema_tweet(df,column):
     return final_df
 
 
-def predictModel(theTweet):
-    list_for_vectorize = []
-    list_for_vectorize.append(theTweet)
-    df = pd.DataFrame({'tweet':list_for_vectorize})
-    clean_df = lema_tweet(df, "tweet")
+def predictModel(df):
     with open('vectorizer.pickle', 'rb') as inp:
         vectorize = pickle.load(inp)
         model = load_model('deep_sentiment_model_trained_zenith.h5')
-        predict_me = vectorize.transform(clean_df['joined_lemm']).toarray()
+        predict_me = vectorize.transform([df['joined_lemm']]).toarray()
+        return float(model.predict(predict_me)[0][0])
+
+def predictTwtModel(df):
+    with open('tweet_vectorizer.pickle', 'rb') as inp:
+        tweet_vectorizer = pickle.load(inp)
+        model = load_model('deep_sentiment_model_trained_zenith.h5')
+        predict_me = tweet_vectorizer.transform([df['joined_lemm']]).toarray()
+        return float(model.predict(predict_me)[0][0])
+
+def predictComModel(df):
+    with open('composite_vectorizer.pickle', 'rb') as inp:
+        composite_vectorizer = pickle.load(inp) 
+        model = load_model('deep_sentiment_model_trained_zenith.h5')
+        predict_me = composite_vectorizer.transform([df['joined_lemm']]).toarray()
         return float(model.predict(predict_me)[0][0])
 
 

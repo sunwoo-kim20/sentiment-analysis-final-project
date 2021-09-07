@@ -1,7 +1,7 @@
 import json
 import requests
 from config import token
-from sqlalchemy import Table, Column, String, MetaData, Date, create_engine, insert, Float, SmallInteger
+from sqlalchemy import Table, Column, String, MetaData, Date, create_engine, insert, Float, SmallInteger, update
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 from sqlalchemy import func
@@ -84,16 +84,23 @@ def api_call():
 
 
         if(unique_tweet == 0):
-            tweets.append( {'id': rez[i]['id'], 'tweet': rez[i]['text'], 'sentiment': '',"joined_lema":df_clean_holder['joined_lemm'][i] })
-        print(df_clean_holder['joined_lemm'][i])
+            tweets.append( {'id': rez[i]['id'], 'tweet': rez[i]['text'], 'sentiment': '',})
         with conn:
             conn.execute(insert(tweet_data),[{
                 "id":rez[i]['id'],
                 "batch":batch,
                 "tweet":rez[i]['text'],
                 "sentiments":9,
-                "joined_lema":df_clean_holder['joined_lemm'][i],
-                "predicted_sentiments":9,
-                "time_data_inserted":'1/1/01'}]) 
-            print(df_clean_holder['joined_lemm'][i])
+                "joined_lemm":df_clean_holder['joined_lemm'][i],
+                "predicted_sentiments_rd":9,
+                "predicted_sentiments_twt":9,
+                "predicted_sentiments_com":9,
+                "time_data_inserted":'1/1/01'}])
+
+        # update_db = (
+        #     update(tweet_data).
+        #     where(tweet_data.c.id == rez[i]['id']).
+        #     values(joined_lemm=df_clean_holder['joined_lemm'][i])
+        #     )
+        # conn.execute(update_db)
     return tweets
