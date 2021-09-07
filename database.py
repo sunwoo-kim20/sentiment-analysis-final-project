@@ -33,9 +33,9 @@ if not engine.has_table(engine, "sentiment_data"):  # If table don't exist, Crea
     df.drop(['Unnamed: 0','sentiment'],axis=1,inplace=True)
     df = lema(df,'text')
     sentiment_data = Table('sentiment_data', meta, 
-                    Column('text', String, default='NaN'), 
-                    Column('sentiments', Integer, default='NaN'),
-                    Column('joined_lemm', String, default='NaN'), 
+                    Column('text', String), 
+                    Column('sentiments', Integer),
+                    Column('joined_lemm', String), 
                     )
     meta.create_all(engine)
     df.to_sql(name='sentiment_data', con=engine, if_exists='append', index=False)

@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 import pandas as pd
-from v_functions import batch_strings, batch_ints
+from v_functions import batch_strings, batch_ints, lema_tweet
 
 rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
@@ -48,6 +48,7 @@ def api_call():
     neg = len(pd.read_sql_query('select sentiments from tweet_data WHERE tweet_data.sentiments = 0 LIMIT 1250', con=engine))
     # neg = session.query(tweet_data).filter(tweet_data.c.sentiments == 0).count()
     pos = len(pd.read_sql_query('select sentiments from tweet_data WHERE tweet_data.sentiments = 1 LIMIT 1250', con=engine))
+    
     if session.query(tweet_data).count() == 0:
         batch = batch_strings['0']
     else:
@@ -66,25 +67,33 @@ def api_call():
             switch = True
             import updateModel
 
+    samples = []
+    rez = json_response['data']
+    for i in rez:
+        samples.append(i['text'])
+    df_holder = pd.DataFrame()
+    df_holder['tweet'] = samples
+    df_clean_holder = lema_tweet(df_holder,'tweet')
+    length = len(rez)
 
-
-
-    for response in json_response['data']:
+    for i in range(length):
         conn = engine.connect()
         session = Session(bind=engine)
-        unique_tweet = session.query(tweet_data).filter(tweet_data.c.id == response['id']).count()
+        unique_tweet = session.query(tweet_data).filter(tweet_data.c.id == rez[i]['id']).count()
         session.close()
 
 
         if(unique_tweet == 0):
-            tweets.append( {'id': response['id'], 'tweet': response['text'], 'sentiment': ''})
-
+            tweets.append( {'id': rez[i]['id'], 'tweet': rez[i]['text'], 'sentiment': '',"joined_lema":df_clean_holder['joined_lemm'][i] })
+        print(df_clean_holder['joined_lemm'][i])
         with conn:
             conn.execute(insert(tweet_data),[{
-                "id":response['id'],
+                "id":rez[i]['id'],
                 "batch":batch,
-                "tweet":response['text'],
+                "tweet":rez[i]['text'],
                 "sentiments":9,
+                "joined_lema":df_clean_holder['joined_lemm'][i],
                 "predicted_sentiments":9,
                 "time_data_inserted":'1/1/01'}]) 
+            print(df_clean_holder['joined_lemm'][i])
     return tweets

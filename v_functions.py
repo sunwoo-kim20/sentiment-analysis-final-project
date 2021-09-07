@@ -13,6 +13,7 @@ from tensorflow import keras
 import string
 import re
 import pickle
+import os
 
 wn = nltk.WordNetLemmatizer()
 string.punctuation
@@ -135,6 +136,7 @@ def lema_tweet(df,column):
         it_list.append(" ".join(row))
     df['joined_lemm'] = it_list
     final_df = pd.DataFrame()
+
     final_df['joined_lemm'] = df['joined_lemm']
     return final_df
 
@@ -150,14 +152,28 @@ def predictModel(theTweet):
         predict_me = vectorize.transform(clean_df['joined_lemm']).toarray()
         return float(model.predict(predict_me)[0][0])
 
-steve = np.arange(0,999999,1)
-batch_strings = {}
-for i in steve:
-    batch_strings[f'{i}'] = f'{i + 1}'
-holder = np.arange(0,999999,1)
-batch_ints = {}
-for i in steve:
-    batch_ints[f'{i}'] = i
+
+if os.path.isfile("batch_strings.pickle"):
+    with open('batch_strings.pickle', 'rb') as inp:
+        batch_strings = pickle.load(inp)
+else:
+    steve = np.arange(0,999999,1)
+    batch_strings = {}
+    for i in steve:
+        batch_strings[f'{i}'] = f'{i + 1}'
+    pickle.dump(batch_strings, open("batch_strings.pickle", "wb"))
+
+if os.path.isfile("batch_ints.pickle"):
+    with open('batch_ints.pickle', 'rb') as inp:
+        batch_ints = pickle.load(inp)
+else:
+    holder = np.arange(0,999999,1)
+    batch_ints = {}
+    for i in holder:
+        batch_ints[f'{i}'] = i
+    pickle.dump(batch_ints, open("batch_ints.pickle", "wb"))
+
+
 
 
 METRICS = [
