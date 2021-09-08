@@ -13,6 +13,7 @@ from sqlalchemy import insert
 import os
 # from v_functions import plot_cm, plot_roc, plot_delta_auc, plot_prc, cmFile, rocFile, deltaaucFile, prcFile, colors
 import v_functions
+from config import token, user, password, host, port, database
 
 if os.path.isfile(v_functions.cmFile):
     os.remove(v_functions.cmFile)
@@ -25,7 +26,7 @@ if os.path.isfile(v_functions.prcFile):
 
 colors = v_functions.colors 
   
-rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
+rds_connection_string = "postgres:postgres@npl-instance-1.cnrgtjkaikng.us-east-2.rds.amazonaws.com:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
 conn = engine.connect()
 Base = declarative_base()

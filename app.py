@@ -13,6 +13,7 @@ from v_functions import lema_tweetz, predictModel, lema_tweet, lema, predictTwtM
 import tweet
 from multiprocessing import Value
 import os
+from config import token, user, password, host, port, database
 
 counter = Value('i', 0)
 
@@ -21,7 +22,7 @@ counter = Value('i', 0)
 app = Flask(__name__)
 
 # Create database connection String
-rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
+rds_connection_string = "postgres:postgres@npl-instance-1.cnrgtjkaikng.us-east-2.rds.amazonaws.com:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
 
 metadata = MetaData(engine)
@@ -261,21 +262,22 @@ def neutralupdate():
 	return {}
 @app.route("/data")
 def datacalled():
-	import stats
-	session = Session(bind=engine)
-	vals = session.query(tweet_data).filter(tweet_data.c.sentiments != 9).all()
-	data_list = []
-	holder = len(vals)
-	for i in range(holder):
-		data_list.append({
-            'id': vals[i][0],
-			'tweet': vals[i][1],
-			'sentiments': vals[i][2],
-			'predicted_sentiments_rd': vals[i][3],
-			'date': vals[i][4],
-		})
+	# import stats
+	# session = Session(bind=engine)
+	# vals = session.query(tweet_data).filter(tweet_data.c.sentiments != 9).all()
+	# data_list = []
+	# holder = len(vals)
+	# for i in range(holder):
+	# 	data_list.append({
+    #         'id': vals[i][0],
+	# 		'tweet': vals[i][1],
+	# 		'sentiments': vals[i][2],
+	# 		'predicted_sentiments_rd': vals[i][3],
+	# 		'date': vals[i][4],
+	# 	})
 
-	return jsonify(data_list)
+	# return jsonify(data_list)
+	return {}
 
 if __name__ == "__main__":
 	app.run(debug=True)

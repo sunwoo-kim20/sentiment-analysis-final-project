@@ -6,25 +6,27 @@ from sqlalchemy import Column, Integer, String, Float, SmallInteger, BigInteger
 from sqlalchemy import create_engine
 import pandas as pd
 from v_functions import lema
-rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
+from config import token, user, password, host, port, database
+
+rds_connection_string = user + ":" + password + "@" + host + ":" + port + "/" + database
 engine = create_engine(f'postgresql://{rds_connection_string}')
 conn = engine.connect()
 Base = declarative_base()
 Base.metadata.create_all(conn)
 meta = MetaData()
 
-if not engine.has_table(engine, "stats_data"):  # If table don't exist, Create.
+if not engine.has_table(engine, "tweet_sentiment"):  # If table don't exist, Create.
     meta = MetaData()
     # Create a table with the appropriate Columns"
-    stats = Table("stats_data", meta,
-          Column('Id', String, primary_key=True, nullable=False), 
-          Column('Date', Date), 
-          Column('Precision_rd', Float),
-          Column('Recall_rd', Float),
-          Column('Precision_twt', Float),
-          Column('Recall_twt', Float),
-          Column('Precision_com', Float),
-          Column('Recall_rd_com', Float)
+    tweet_sentiment = Table("tweet_sentiment", meta,
+          Column('Id', String, primary_key=True), 
+          Column('Date', Date),
+          Column('joined_lemm', String),
+          Column('tweet', String),
+          Column('sentiments', SmallInteger),
+          Column('predicted_sentiments_rd', Float),
+          Column('predicted_sentiments_twt', Float),
+          Column('predicted_sentiments_com', Float), 
                  )
     # Implement the creation
     meta.create_all(engine)
@@ -51,12 +53,43 @@ if not engine.has_table(engine, "tweet_data"):  # If table don't exist, Create.
         'tweet_data', meta, 
         Column('id', String, primary_key = True),
         Column("batch", String), 
-        Column('tweet', String), 
-        Column('sentiments', SmallInteger),
-        Column('predicted_sentiments_rd', Float),
-        Column('predicted_sentiments_twt', Float),
-        Column('predicted_sentiments_com', Float),
-        Column('time_data_inserted', Date),
-        Column('joined_lemm', String), 
+        Column('tweet', String),
+        Column('joined_lemm', String),
+        Column('holder', Integer)          
     )
     meta.create_all(engine)    
+
+if not engine.has_table(engine, "filter_data"):  # If table don't exist, Create.
+    filter_data = Table(
+        'filter_data', meta, 
+        Column('id', String, primary_key = True), 
+        Column('tweet', String),
+        Column('joined_lemm', String), 
+        Column('Date', Date),         
+    )
+    meta.create_all(engine)
+
+if not engine.has_table(engine, "stats_data"):  # If table don't exist, Create.
+    meta = MetaData()
+    # Create a table with the appropriate Columns"
+    stats = Table("stats_data", meta,
+          Column('Id', String, primary_key=True), 
+          Column('Date', Date), 
+          Column('Precision_rd', Float),
+          Column('Recall_rd', Float),
+          Column('tpr_rd', Float),
+          Column('fpr_rd', Float),
+          Column('auc_rd', Float),
+          Column('Precision_twt', Float),
+          Column('Recall_twt', Float),
+          Column('tpr_twt', Float),
+          Column('fpr_twt', Float),
+          Column('auc_twt', Float),
+          Column('Precision_com', Float),
+          Column('Recall_rd_com', Float),
+          Column('tpr_com', Float),
+          Column('fpr_com', Float),
+          Column('auc_com', Float),
+                 )
+    # Implement the creation
+    meta.create_all(engine)

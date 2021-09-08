@@ -4,18 +4,21 @@ function clickedFace(choice) {
     // call route to give vote to flask 
     if (choice === 'Positive') {
         $.post("/positive_update", data);
+        location.reload();
     }
     if (choice === 'Negative') {
         $.post( "/negative_update", data);
+        location.reload();
     }
     if (choice === 'Neutral') {
         $.post("/neutral_update", data);
+        location.reload();
 
     }
 
     // update tweet
-    updateTweet();
-    location.reload();
+    // updateTweet();
+    // location.reload();
 }
 
 // function noSentiment(choice) {

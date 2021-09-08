@@ -1,6 +1,7 @@
 import json
 import requests
-from config import token
+from flask_sqlalchemy import sqlalchemy
+from config import token, user, password, host, port, database
 from sqlalchemy import Table, Column, String, MetaData, Date, create_engine, insert, Float, SmallInteger, update
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
@@ -8,12 +9,7 @@ from sqlalchemy import func
 import pandas as pd
 from v_functions import batch_strings, batch_ints, lema_tweet
 
-rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
-engine = create_engine(f'postgresql://{rds_connection_string}')
-conn = engine.connect()
 
-metadata = MetaData(engine)
-tweet_data = Table('tweet_data', metadata, autoload=True, autoload_with=engine)
 
 keyword1 = '(America OR USA OR United States of America)'
 keyword2 =  ' -is:retweet -is:reply lang:en'
@@ -40,6 +36,12 @@ def connect_to_endpoint(url, params):
 
 def api_call():
     tweets = []
+    rds_connection_string = "postgres:postgres@npl-instance-1.cnrgtjkaikng.us-east-2.rds.amazonaws.com:5432/sentiment_db"
+    engine = create_engine(f'postgresql://{rds_connection_string}')
+    conn = engine.connect()
+
+    metadata = MetaData(engine)
+    tweet_data = Table('tweet_data', metadata, autoload=True, autoload_with=engine) 
 
     json_response = connect_to_endpoint(search_url, query_params)
     conn = engine.connect()

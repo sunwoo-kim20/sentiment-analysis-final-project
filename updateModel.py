@@ -14,8 +14,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import Normalizer
 import numpy as np
+from config import token, user, password, host, port, database
 
-rds_connection_string = "postgres:postgres@localhost:5432/sentiment_db"
+rds_connection_string = "postgres:postgres@npl-instance-1.cnrgtjkaikng.us-east-2.rds.amazonaws.com:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
 conn = engine.connect()
 
