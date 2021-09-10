@@ -15,8 +15,6 @@ from multiprocessing import Value
 import os
 from config import rds_connection_string
 
-counter = Value('i', 0)
-
 
 # initialize flask
 app = Flask(__name__)
@@ -44,10 +42,10 @@ def statistics():
 def load_tweet():
 	conn = engine.connect()
 	session = Session(bind=engine)
-	available_tweets = session.query(tweet_data).filter(tweet_data.c.holder == 1).count()
-	session.close()
-	# print(available_tweets)
-	if available_tweets == 0:
+	available_tweets = len(pd.read_sql_query('select * from tweet_data WHERE tweet_data.holder = 1', con=conn))
+	# session.close()
+	print(available_tweets)
+	if available_tweets <= 5:
 		tweet.api_call()
 	df = pd.read_sql_query('select * from tweet_data WHERE tweet_data.holder = 1', con=conn)
 	df = df.iloc[0]

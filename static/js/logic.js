@@ -4,21 +4,22 @@ function clickedFace(choice) {
     // call route to give vote to flask 
     if (choice === 'Positive') {
         $.post("/positive_update", data);
+        updateTweet();
     }
     if (choice === 'Negative') {
         $.post( "/negative_update", data);
+        updateTweet();
     }
     if (choice === 'Neutral') {
         $.post("/neutral_update", data);
-
-
+        updateTweet();
     }
 
-    updateTweet();
+    setTimeout(updateTweet(), 3)
 }
 
 
-
+setTimeout(updateTweet(), 3)
 function updateTweet() {
     d3.json("/load_tweet").then(data =>{
         // give data to the tweet and change the tweet text
