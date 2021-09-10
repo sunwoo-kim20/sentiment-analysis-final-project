@@ -1,7 +1,7 @@
 import json
 import requests
 from flask_sqlalchemy import sqlalchemy
-from config import token, user, password, host, port, database
+from config import token, rds_connection_string
 from sqlalchemy import Table, Column, String, MetaData, Date, create_engine, insert, Float, SmallInteger, update
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
@@ -36,7 +36,6 @@ def connect_to_endpoint(url, params):
 
 def api_call():
     tweets = []
-    rds_connection_string = "postgres:postgres@npl-instance-1.cnrgtjkaikng.us-east-2.rds.amazonaws.com:5432/sentiment_db"
     engine = create_engine(f'postgresql://{rds_connection_string}')
     conn = engine.connect()
 
@@ -64,11 +63,12 @@ def api_call():
     
     
     
-    if modded%10 == 0:
+    if modded%20 == 0:
         neg = len(pd.read_sql_query('select sentiments from stats_data WHERE stats_data.sentiments = 0 LIMIT 1250', con=engine))
         pos = len(pd.read_sql_query('select sentiments from stats_data WHERE stats_data.sentiments = 1 LIMIT 1250', con=engine))
         if(neg == 1250) and (pos == 1250):
             import updateModel
+            import stats
 
     samples = []
     rez = json_response['data']

@@ -13,7 +13,7 @@ from v_functions import lema_tweetz, predictModel, lema_tweet, lema, predictTwtM
 import tweet
 from multiprocessing import Value
 import os
-from config import token, user, password, host, port, database
+from config import rds_connection_string
 
 counter = Value('i', 0)
 
@@ -22,7 +22,6 @@ counter = Value('i', 0)
 app = Flask(__name__)
 
 # Create database connection String
-rds_connection_string = "postgres:postgres@npl-instance-1.cnrgtjkaikng.us-east-2.rds.amazonaws.com:5432/sentiment_db"
 engine = create_engine(f'postgresql://{rds_connection_string}')
 
 metadata = MetaData(engine)
@@ -55,7 +54,8 @@ def load_tweet():
 	tweet_dict = {
 		"id":df['id'],
 		"tweet":df['tweet'],
-		"joined_lemm":df['joined_lemm']
+		"joined_lemm":df['joined_lemm'],
+		"batch":df['batch']
 		}
 
 	return jsonify(tweet_dict)
@@ -105,6 +105,7 @@ def positive_update():
 				"Date":tweet_dict['Date'],
 				"predicted_sentiments_twt":tweet_dict['predicted_sentiments_twt'],
 				"predicted_sentiments_com":tweet_dict['predicted_sentiments_com'],
+				"batch":request.form['batch']
 
 				}])
 	else:
@@ -145,7 +146,7 @@ def positive_update():
 				"Date":tweet_dict['Date'],
 				"predicted_sentiments_twt":42,
 				"predicted_sentiments_com":42,
-
+				"batch":request.form['batch']
 				}])		
 	return {}
 
@@ -192,7 +193,7 @@ def negative_update():
 				"Date":tweet_dict['Date'],
 				"predicted_sentiments_twt":tweet_dict['predicted_sentiments_twt'],
 				"predicted_sentiments_com":tweet_dict['predicted_sentiments_com'],
-
+				"batch":request.form['batch']
 				}])
 	else:
 		df = pd.DataFrame()
@@ -231,6 +232,7 @@ def negative_update():
 				"Date":tweet_dict['Date'],
 				"predicted_sentiments_twt":42,
 				"predicted_sentiments_com":42,
+				"batch":request.form['batch']
 
 				}])
 	return {}
@@ -258,6 +260,7 @@ def neutralupdate():
 			"tweet":tweet_dict['tweet'],
 			"joined_lemm":tweet_dict['joined_lemm'],
 			"Date":tweet_dict['Date'],
+			"batch":request.form['batch']
 			}])
 	return {}
 @app.route("/data")
