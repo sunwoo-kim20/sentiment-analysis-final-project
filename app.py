@@ -8,7 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import MetaData, update, Table
 from sqlalchemy.orm import Session
 from datetime import datetime
-from v_functions import lema_tweetz, predictModel, lema_tweet, lema, predictTwtModel, predictComModel
+from v_functions import lema_tweetz, predictModel, lema_tweet, lema, predictTwtModel, predictComModel, predictAdjModel
 # import database
 import tweet
 from multiprocessing import Value
@@ -40,20 +40,26 @@ def statistics():
 
 @app.route("/load_tweet")
 def load_tweet():
+
+
 	conn = engine.connect()
 	session = Session(bind=engine)
 	available_tweets = len(pd.read_sql_query('select * from tweet_data WHERE tweet_data.holder = 1', con=conn))
 	# session.close()
-	print(available_tweets)
 	if available_tweets <= 5:
 		tweet.api_call()
 	df = pd.read_sql_query('select * from tweet_data WHERE tweet_data.holder = 1', con=conn)
 	df = df.iloc[0]
+	predicted_sentiments_adj = 42
+	if os.path.isfile("deep_adjudicator_model_trained.h5"):
+		predicted_sentiments_adj = predictAdjModel(df)
+
 	tweet_dict = {
 		"id":df['id'],
 		"tweet":df['tweet'],
 		"joined_lemm":df['joined_lemm'],
-		"batch":df['batch']
+		"batch":df['batch'],
+		"predicted_sentiments_adj":predicted_sentiments_adj
 		}
 
 	return jsonify(tweet_dict)
@@ -62,11 +68,11 @@ def load_tweet():
 @app.route("/positive_update", methods = ['POST'])
 def positive_update():
 	# Try to grab values, will catch if someone clicks on face before a tweet loads
-	if os.path.isfile("deep_sentiment_twitter_model_trained.h5"):
+	if os.path.isfile("deep_adjudicator_model_trained.h5"):
 		df = pd.DataFrame()
 		df['tweet'] = [request.form['tweet']]
 		df['joined_lemm'] = [request.form['joined_lemm']]
-
+		predicted_sentiments_adj = request.form['predicted_sentiments_adj']
 		predicted_sentiments_rd = predictModel(df)
 		predicted_sentiments_twt = predictTwtModel(df)
 		predicted_sentiments_com = predictComModel(df)
@@ -79,7 +85,9 @@ def positive_update():
 			"predicted_sentiments_rd":predicted_sentiments_rd,
 			"predicted_sentiments_twt":predicted_sentiments_twt,
 			"predicted_sentiments_com":predicted_sentiments_com,
-			"Date": datetime.now()
+			"Date": datetime.now(),
+			"predicted_sentiments_adj":predicted_sentiments_adj
+
 		}
 
 		conn = engine.connect()
@@ -144,17 +152,18 @@ def positive_update():
 				"Date":tweet_dict['Date'],
 				"predicted_sentiments_twt":42,
 				"predicted_sentiments_com":42,
-				"batch":request.form['batch']
+				"batch":request.form['batch'],
+				"predicted_sentiments_adj":42
 				}])		
 	return {}
 
 @app.route("/negative_update", methods = ['POST'])
 def negative_update():
-	if os.path.isfile("deep_sentiment_twitter_model_trained.h5"):
+	if os.path.isfile("deep_adjudicator_model_trained.h5"):
 		df = pd.DataFrame()
 		df['tweet'] = [request.form['tweet']]
 		df['joined_lemm'] = [request.form['joined_lemm']]
-
+		predicted_sentiments_adj = request.form['predicted_sentiments_adj']
 		predicted_sentiments_rd = predictModel(df)
 		predicted_sentiments_twt = predictTwtModel(df)
 		predicted_sentiments_com = predictComModel(df)
@@ -167,7 +176,8 @@ def negative_update():
 			"predicted_sentiments_rd":predicted_sentiments_rd,
 			"predicted_sentiments_twt":predicted_sentiments_twt,
 			"predicted_sentiments_com":predicted_sentiments_com,
-			"Date": datetime.now()
+			"Date": datetime.now(),
+			"predicted_sentiments_adj":predicted_sentiments_adj
 		}
 
 		conn = engine.connect()
@@ -191,7 +201,8 @@ def negative_update():
 				"Date":tweet_dict['Date'],
 				"predicted_sentiments_twt":tweet_dict['predicted_sentiments_twt'],
 				"predicted_sentiments_com":tweet_dict['predicted_sentiments_com'],
-				"batch":request.form['batch']
+				"batch":request.form['batch'],
+				"predicted_sentiments_adj":predicted_sentiments_adj
 				}])
 	else:
 		df = pd.DataFrame()
@@ -230,36 +241,69 @@ def negative_update():
 				"Date":tweet_dict['Date'],
 				"predicted_sentiments_twt":42,
 				"predicted_sentiments_com":42,
-				"batch":request.form['batch']
-
+				"batch":request.form['batch'],
+				"predicted_sentiments_adj":42
 				}])
 	return {}
 @app.route("/neutral_update", methods = ['POST'])
 def neutralupdate():
-	tweet_dict = {
-	"id": request.form['id'],
-	"tweet": request.form['tweet'],
-	"joined_lemm": request.form['joined_lemm'],
-	"Date": datetime.now()
-		}
+	if os.path.isfile("deep_adjudicator_model_trained.h5"):
+		predicted_sentiments_adj = request.form['predicted_sentiments_adj']
+		tweet_dict = {
+		"id": request.form['id'],
+		"tweet": request.form['tweet'],
+		"joined_lemm": request.form['joined_lemm'],
+		"Date": datetime.now(),
+		"predicted_sentiments_adj":predicted_sentiments_adj,
 
-	conn = engine.connect()
-	tweet_update = (
-		update(tweet_data).
-		where(tweet_data.c.id == tweet_dict['id']).
-		values(holder=0)
-		)
-	conn.execute(tweet_update)
+			}
 
-	conn = engine.connect()
-	with conn:
-		conn.execute(insert(filter_data),[{
-			"id":request.form['id'],
-			"tweet":tweet_dict['tweet'],
-			"joined_lemm":tweet_dict['joined_lemm'],
-			"Date":tweet_dict['Date'],
-			"batch":request.form['batch']
-			}])
+		conn = engine.connect()
+		tweet_update = (
+			update(tweet_data).
+			where(tweet_data.c.id == tweet_dict['id']).
+			values(holder=0)
+			)
+		conn.execute(tweet_update)
+
+		conn = engine.connect()
+		with conn:
+			conn.execute(insert(filter_data),[{
+				"id":request.form['id'],
+				"tweet":tweet_dict['tweet'],
+				"joined_lemm":tweet_dict['joined_lemm'],
+				"Date":tweet_dict['Date'],
+				"batch":request.form['batch'],
+				"predicted_sentiments_adj":predicted_sentiments_adj
+				}])
+	else:
+		tweet_dict = {
+		"id": request.form['id'],
+		"tweet": request.form['tweet'],
+		"joined_lemm": request.form['joined_lemm'],
+		"Date": datetime.now(),
+		"predicted_sentiments_adj":42,
+
+			}
+
+		conn = engine.connect()
+		tweet_update = (
+			update(tweet_data).
+			where(tweet_data.c.id == tweet_dict['id']).
+			values(holder=0)
+			)
+		conn.execute(tweet_update)
+
+		conn = engine.connect()
+		with conn:
+			conn.execute(insert(filter_data),[{
+				"id":request.form['id'],
+				"tweet":tweet_dict['tweet'],
+				"joined_lemm":tweet_dict['joined_lemm'],
+				"Date":tweet_dict['Date'],
+				"batch":request.form['batch'],
+				"predicted_sentiments_adj":42
+				}])
 	return {}
 @app.route("/data")
 def datacalled():

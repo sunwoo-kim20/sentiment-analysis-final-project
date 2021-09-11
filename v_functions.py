@@ -179,7 +179,12 @@ def predictComModel(df):
         model = load_model('deep_sentiment_com_model_trained.h5')
         predict_me = composite_vectorizer.transform(df['joined_lemm']).toarray()
         return float(model.predict(predict_me)[0][0])
-
+def predictAdjModel(df):
+    with open('adjudication_vectorizer.pickle', 'rb') as inp:
+        composite_vectorizer = pickle.load(inp) 
+        model = load_model('deep_adjudicator_model_trained.h5')
+        predict_me = composite_vectorizer.transform(df['joined_lemm']).toarray()
+        return float(model.predict(predict_me)[0][0])
 
 if os.path.isfile("batch_strings.pickle"):
     with open('batch_strings.pickle', 'rb') as inp:
