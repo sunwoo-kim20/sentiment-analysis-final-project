@@ -20,6 +20,7 @@ import os
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import sklearn
+import datetime
 
 METRICS = METRICS
 
@@ -207,46 +208,12 @@ x_predict_adj = model_adj.predict(val_features_com)
 y_actual_adj = val_labels_adj
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 colors = v_functions.colors 
   
 # Base = declarative_base()
 # Base.metadata.create_all(conn)
-meta = MetaData()
-stats = Table("stats_data", meta,
-        Column('version', String, primary_key=True),
-        Column('batch_min', String),
-        Column('batch_max', String), 
-        Column('Date', Date), 
-        Column('Precision_rd', Float),
-        Column('Recall_rd', Float),
-        Column('tpr_rd', Float),
-        Column('fpr_rd', Float),
-        Column('auc_rd', Float),
-        Column('Precision_twt', Float),
-        Column('Recall_twt', Float),
-        Column('tpr_twt', Float),
-        Column('fpr_twt', Float),
-        Column('auc_twt', Float),
-        Column('Precision_com', Float),
-        Column('Recall_rd_com', Float),
-        Column('tpr_com', Float),
-        Column('fpr_com', Float),
-        Column('auc_com', Float),
-                )
 
-
+                
 
 if os.path.isfile(v_functions.cmFile_twt):
     os.remove(v_functions.cmFile_twt)
@@ -264,6 +231,114 @@ if os.path.isfile(v_functions.prcFile):
 v_functions.plot_cm("Twitter Confusion Matrix", v_functions.cmFile_twt,y_actual_twt,x_predict_twt)
 v_functions.plot_cm("Composite Confusion Matrix",v_functions.cmFile_com,y_actual_com,x_predict_com)
 v_functions.plot_cm("Adjudicator Confusion Matrix", v_functions.cmFile_adj,y_actual_adj,x_predict_adj)
+
+
+
+
+
+
+# plt.figure(figsize=(20,10))
+# v_functions.plot_delta_auc("Delta AUC",y_actual_twt,x_predict_twt,color=colors[1])
+
+
+# plt.figure(figsize=(10,10))
+# v_functions.plot_prc("PRC", y_actual_twt, x_predict_twt, color=colors[2])
+date = datetime.now()
+steve = len(pd.read_sql_query('select date from stats_data', con=engine))
+batch_min = 0
+batch_max = pd.read_sql_query('select batch from tweet_sentiment', con=engine)['batch'].max()
+if steve == 0:
+    batch_min = 1
+else:
+    batch_min = pd.read_sql_query('select batch from stats_data', con=engine)['batch'].max() + 1
+    real_version = steve
+    
+    
+    df1 = pd.read_sql_query(f'select predicted_sentiments_adj from filter_data WHERE batch >= {batch_min} and batch <= {batch_max}', con=engine)
+    df2 = pd.read_sql_query(f'select predicted_sentiments_adj,predicted_sentiments_twt,predicted_sentiments_com, sentiments from tweet_sentiment WHERE batch >= {batch_min} and batch <= {batch_max}', con=engine)
+    df_holder = pd.DataFrame()
+    df_holder['predicted_sentiments_adj'] = df2['predicted_sentiments_adj']
+    holder1 = []
+    holder2 = []
+    for i in range(len(df1)):
+        holder1.append(1)
+    df1['sentiments_adj'] = holder1
+    for i in range(len(df_holder)):
+        holder2.append(0)
+    df_holder['sentiments_adj'] = holder2
+
+    joined_adj_df = pd.concat([df1,df_holder])
+
+
+    x_predict_adj_real = joined_adj_df['predicted_sentiments_adj']
+    y_actual_adj_real = joined_adj_df['sentiments_adj']
+
+    x_predict_twt_real = df2['predicted_sentiments_twt']
+    x_predict_com_real = df2['predicted_sentiments_com']
+    y_actual_real = df2['sentiments']
+
+    cm_adj_real = confusion_matrix(y_actual_adj_real,x_predict_adj_real > .5)
+    precision_adj_real = cm_adj_real[1][1]/(cm_adj_real[1][1] + cm_adj_real[0][1])
+    recall_adj_real = cm_adj_real[1][1]/(cm_adj_real[1][1] + cm_adj_real[1][0])
+
+    cm_twt_real = confusion_matrix(y_actual_real,x_predict_twt_real > .5)
+    precision_twt_real = cm_twt_real[1][1]/(cm_twt_real[1][1] + cm_twt_real[0][1])
+    recall_twt_real = cm_twt_real[1][1]/(cm_twt_real[1][1] + cm_twt_real[1][0])
+
+    cm_com_real = confusion_matrix(y_actual_real,x_predict_com_real > .5)
+    precision_com_real = cm_com_real[1][1]/(cm_com_real[1][1] + cm_com_real[0][1])
+    recall_com_real = cm_com_real[1][1]/(cm_com_real[1][1] + cm_com_real[1][0])
+
+    fpr_twt_real, tpr_twt_real, _ = sklearn.metrics.roc_curve(y_actual_real, x_predict_twt_real)
+    fpr_com_real, tpr_com_real, _ = sklearn.metrics.roc_curve(y_actual_real, x_predict_com_real)
+    fpr_adj_real, tpr_adj_real, _ = sklearn.metrics.roc_curve(y_actual_real, x_predict_adj_real)
+    auc_twt_real = sklearn.metrics.auc(fpr_twt_real,tpr_twt_real)
+    auc_com_real = sklearn.metrics.auc(fpr_com_real,tpr_com_real)
+    auc_adj_real = sklearn.metrics.auc(fpr_adj_real,tpr_adj_real)
+
+    meta = MetaData()
+    performance = Table("performance_stats", meta,
+        Column('version', String, primary_key=True), 
+        Column('date', Date), 
+        Column('precision_adj', Float),
+        Column('recall_adj', Float),
+        Column('tpr_adj', Float),
+        Column('fpr_adj', Float),
+        Column('auc_adj', Float),
+        Column('precision_twt', Float),
+        Column('recall_twt', Float),
+        Column('tpr_twt', Float),
+        Column('fpr_twt', Float),
+        Column('auc_twt', Float),
+        Column('precision_com', Float),
+        Column('recall_rd_com', Float),
+        Column('tpr_com', Float),
+        Column('fpr_com', Float),
+        Column('auc_com', Float),     
+                )
+
+    conn = engine.connect()
+    with conn:
+        conn.execute(insert(performance),[{
+            "version":real_version,
+            'precision_adj':precision_adj_real,
+            'recall_adj':recall_adj_real,
+            'tpr_adj':tpr_adj_real,
+            'fpr_adj':fpr_adj_real,
+            'auc_adj':auc_adj_real,       
+            'precision_twt':precision_twt_real,
+            'recall_twt':recall_twt_real,
+            'tpr_twt':tpr_twt_real,
+            'fpr_twt':fpr_twt_real,
+            'auc_twt':auc_twt_real,
+            'precision_com':precision_com_real,
+            'recall_com':recall_com_real,
+            'tpr_com':tpr_com_real,
+            'fpr_com':fpr_com_real,
+            'auc_com':auc_com_real,
+            "date":date,
+            }])
+
 
 
 
@@ -290,44 +365,54 @@ auc_adj = sklearn.metrics.auc(fpr_adj,tpr_adj)
 plt.figure(figsize=(15,7))
 v_functions.plot_roc("ROC", y_actual_twt, x_predict_twt, y_actual_com, x_predict_com, y_actual_adj, x_predict_adj, color=colors[0])
 
-# plt.figure(figsize=(20,10))
-# v_functions.plot_delta_auc("Delta AUC",y_actual_twt,x_predict_twt,color=colors[1])
-
-
-# plt.figure(figsize=(10,10))
-# v_functions.plot_prc("PRC", y_actual_twt, x_predict_twt, color=colors[2])
-
-
-
+df = pd.read_sql_query('select predicted_sentiments_rd, predicted_sentiments_twt, predicted_sentiments_com, sentiments from tweet_sentiment', con=engine)
+version = steve + 1
+meta = MetaData()
+stats = Table("stats_data", meta,
+        Column('version', String, primary_key=True), 
+        Column('date', Date), 
+        Column('precision_adj', Float),
+        Column('recall_adj', Float),
+        Column('tpr_adj', Float),
+        Column('fpr_adj', Float),
+        Column('auc_adj', Float),
+        Column('precision_twt', Float),
+        Column('recall_twt', Float),
+        Column('tpr_twt', Float),
+        Column('fpr_twt', Float),
+        Column('auc_twt', Float),
+        Column('precision_com', Float),
+        Column('recall_rd_com', Float),
+        Column('tpr_com', Float),
+        Column('fpr_com', Float),
+        Column('auc_com', Float),
+        Column('batch_min', String),
+        Column('batch_max', String),        
+                )
 conn = engine.connect()
 with conn:
     conn.execute(insert(stats),[{
-        "Id":,
-        "tweet":,
-
-        "predicted_sentiments_rd":tweet_dict['predicted_sentiments_rd'],
-        "Date":,
-        "predicted_sentiments_twt":42,
-        "predicted_sentiments_com":42,
-        "batch":request.form['batch']
+        "version":version,
+        'batch_min':batch_min,
+        'batch_max':batch_max,
+        'precision_adj':precision_adj,
+        'recall_adj':recall_adj,
+        'tpr_adj':tpr_adj,
+        'fpr_adj':fpr_adj,
+        'auc_adj':auc_adj,       
+        'precision_twt':precision_twt,
+        'recall_twt':recall_twt,
+        'tpr_twt':tpr_twt,
+        'fpr_twt':fpr_twt,
+        'auc_twt':auc_twt,
+        'precision_com':precision_com,
+        'recall_com':recall_com,
+        'tpr_com':tpr_com,
+        'fpr_com':fpr_com,
+        'auc_com':auc_com,
+        "date":date,
         }])
 
-steve = len(pd.read_sql_query('select date from stats_data', con=engine))
-batch_min = 0
-if steve == 0:
-    batch_min = 1
-else:
-    batch_min = pd.read_sql_query('select batch from stats_data', con=engine)['batch'].max() + 1
-
-batch_max = pd.read_sql_query('select batch from tweet_sentiment', con=engine)['batch'].max()
-df = pd.read_sql_query('select predicted_sentiments_rd, predicted_sentiments_twt, predicted_sentiments_com, sentiments from tweet_sentiment', con=engine)
-version = steve + 1
 
 
-x_predict_rd = df['predicted_sentiments_rd']
 
-x_predict_twt = df['predicted_sentiments_twt']
-
-x_predict_com = df['predicted_sentiments_com']
-
-y_actual = df['sentiments']
