@@ -5,7 +5,7 @@ import pickle
 import pandas as pd
 import nltk
 import string
-from v_functions import lema_tweet, lema, METRICS, make_model, early_stopping
+from v_functions import METRICS, make_model, early_stopping
 from nltk.corpus import stopwords
 import keras.metrics
 from sqlalchemy import Table, Column, String, MetaData, Date, create_engine, insert, Float, SmallInteger
@@ -19,6 +19,9 @@ import v_functions
 import os
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
+import sklearn
+
+METRICS = METRICS
 
 engine = create_engine(f'postgresql://{rds_connection_string}')
 conn = engine.connect()
@@ -214,14 +217,7 @@ y_actual_adj = val_labels_adj
 
 
 
-if os.path.isfile(v_functions.cmFile):
-    os.remove(v_functions.cmFile)
-if os.path.isfile(v_functions.rocFile):
-    os.remove(v_functions.rocFile)
-if os.path.isfile(v_functions.deltaaucFile):
-    os.remove(v_functions.deltaaucFile)
-if os.path.isfile(v_functions.prcFile):
-    os.remove(v_functions.prcFile)
+
 
 colors = v_functions.colors 
   
@@ -229,7 +225,9 @@ colors = v_functions.colors
 # Base.metadata.create_all(conn)
 meta = MetaData()
 stats = Table("stats_data", meta,
-        Column('Id', String, primary_key=True), 
+        Column('version', String, primary_key=True),
+        Column('batch_min', String),
+        Column('batch_max', String), 
         Column('Date', Date), 
         Column('Precision_rd', Float),
         Column('Recall_rd', Float),
@@ -250,7 +248,22 @@ stats = Table("stats_data", meta,
 
 
 
-v_functions.plot_cm(y_actual_twt,x_predict_twt)
+if os.path.isfile(v_functions.cmFile_twt):
+    os.remove(v_functions.cmFile_twt)
+if os.path.isfile(v_functions.cmFile_com):
+    os.remove(v_functions.cmFile_com)
+if os.path.isfile(v_functions.cmFile_adj):
+    os.remove(v_functions.cmFile_adj)
+if os.path.isfile(v_functions.rocFile):
+    os.remove(v_functions.rocFile)
+if os.path.isfile(v_functions.deltaaucFile):
+    os.remove(v_functions.deltaaucFile)
+if os.path.isfile(v_functions.prcFile):
+    os.remove(v_functions.prcFile)
+
+v_functions.plot_cm("Twitter Confusion Matrix", v_functions.cmFile_twt,y_actual_twt,x_predict_twt)
+v_functions.plot_cm("Composite Confusion Matrix",v_functions.cmFile_com,y_actual_com,x_predict_com)
+v_functions.plot_cm("Adjudicator Confusion Matrix", v_functions.cmFile_adj,y_actual_adj,x_predict_adj)
 
 
 
@@ -259,7 +272,7 @@ cm_adj = confusion_matrix(y_actual_adj,x_predict_adj > .5)
 precision_adj = cm_adj[1][1]/(cm_adj[1][1] + cm_adj[0][1])
 recall_adj = cm_adj[1][1]/(cm_adj[1][1] + cm_adj[1][0])
 
-cm_twt = confusion_matrix(y_actual_com,x_predict_com > .5)
+cm_twt = confusion_matrix(y_actual_twt,x_predict_twt > .5)
 precision_twt = cm_twt[1][1]/(cm_twt[1][1] + cm_twt[0][1])
 recall_twt = cm_twt[1][1]/(cm_twt[1][1] + cm_twt[1][0])
 
@@ -267,17 +280,49 @@ cm_com = confusion_matrix(y_actual_com,x_predict_com > .5)
 precision_com = cm_com[1][1]/(cm_com[1][1] + cm_com[0][1])
 recall_com = cm_com[1][1]/(cm_com[1][1] + cm_com[1][0])
 
+fpr_twt, tpr_twt, _ = sklearn.metrics.roc_curve(y_actual_twt, x_predict_twt)
+fpr_com, tpr_com, _ = sklearn.metrics.roc_curve(y_actual_com, x_predict_com)
+fpr_adj, tpr_adj, _ = sklearn.metrics.roc_curve(y_actual_adj, x_predict_adj)
+auc_twt = sklearn.metrics.auc(fpr_twt,tpr_twt)
+auc_com = sklearn.metrics.auc(fpr_com,tpr_com)
+auc_adj = sklearn.metrics.auc(fpr_adj,tpr_adj)
+
 plt.figure(figsize=(15,7))
-v_functions.plot_roc("ROC", y_actual_twt, x_predict_twt, color=colors[0])
+v_functions.plot_roc("ROC", y_actual_twt, x_predict_twt, y_actual_com, x_predict_com, y_actual_adj, x_predict_adj, color=colors[0])
 
-plt.figure(figsize=(20,10))
-v_functions.plot_delta_auc("Delta AUC",y_actual_twt,x_predict_twt,color=colors[1])
+# plt.figure(figsize=(20,10))
+# v_functions.plot_delta_auc("Delta AUC",y_actual_twt,x_predict_twt,color=colors[1])
 
 
-plt.figure(figsize=(10,10))
-v_functions.plot_prc("PRC", y_actual_twt, x_predict_twt, color=colors[2])
+# plt.figure(figsize=(10,10))
+# v_functions.plot_prc("PRC", y_actual_twt, x_predict_twt, color=colors[2])
 
+
+
+conn = engine.connect()
+with conn:
+    conn.execute(insert(stats),[{
+        "Id":,
+        "tweet":,
+
+        "predicted_sentiments_rd":tweet_dict['predicted_sentiments_rd'],
+        "Date":,
+        "predicted_sentiments_twt":42,
+        "predicted_sentiments_com":42,
+        "batch":request.form['batch']
+        }])
+
+steve = len(pd.read_sql_query('select date from stats_data', con=engine))
+batch_min = 0
+if steve == 0:
+    batch_min = 1
+else:
+    batch_min = pd.read_sql_query('select batch from stats_data', con=engine)['batch'].max() + 1
+
+batch_max = pd.read_sql_query('select batch from tweet_sentiment', con=engine)['batch'].max()
 df = pd.read_sql_query('select predicted_sentiments_rd, predicted_sentiments_twt, predicted_sentiments_com, sentiments from tweet_sentiment', con=engine)
+version = steve + 1
+
 
 x_predict_rd = df['predicted_sentiments_rd']
 

@@ -70,26 +70,31 @@ def plot_metrics(history):
         plt.ylim([0,1])
 
     plt.legend()
-cmFile = "static/images/cm.png"
-def plot_cm(labels, predictions, p=0.5):
-    cm = confusion_matrix(labels, predictions > p)
-    steve = []
-    steve.append(f'precision: {cm[1][1]/(cm[1][1] + cm[0][1])}')
-    steve.append(f'recall: {cm[1][1]/(cm[1][1] + cm[1][0])}')
+cmFile_twt = "static/images/cm_twt.png"
+cmFile_com = "static/images/cm_com.png"
+cmFile_adj = "static/images/cm_adj.png"
 
+def plot_cm(title,file_save,labels, predictions, p=0.5):
+    cm = confusion_matrix(labels, predictions > p)
     plt.figure(figsize=(5,5))
     sns.heatmap(cm, annot=True, fmt="d")
-    plt.title(steve)
+    plt.title(title)
     plt.ylabel('Actual label')
     plt.xlabel('Predicted label')
-    plt.savefig(cmFile, dpi=300)
+    plt.savefig(file_save, dpi=300)
 
 rocFile = "static/images/roc.png"    
-def plot_roc(name, labels, predictions, **kwargs):
-    fp, tp, _ = sklearn.metrics.roc_curve(labels, predictions)
-    auc = sklearn.metrics.auc(fp,tp)
-    plt.plot(100*fp, 100*tp, label=name, linewidth=2, **kwargs)
-    plt.title(f'AUC is {auc}')
+def plot_roc(name, labels_twt, predictions_twt, labels_com, predictions_com, labels_adj, predictions_adj, **kwargs):
+    fpr_twt, tpr_twt, _ = sklearn.metrics.roc_curve(labels_twt, predictions_twt)
+    fpr_com, tpr_com, _ = sklearn.metrics.roc_curve(labels_com, predictions_com)
+    fpr_adj, tpr_adj, _ = sklearn.metrics.roc_curve(labels_adj, predictions_adj)
+    # auc1 = sklearn.metrics.auc(fpr1,tpr1)
+    # auc1 = sklearn.metrics.auc(fpr1,tpr1)
+    # auc1 = sklearn.metrics.auc(fpr1,tpr1)
+    plt.plot(100*fpr_twt, 100*tpr_twt, label="model_twt", linewidth=2, **kwargs)
+    plt.plot(100*fpr_com, 100*tpr_com, label="model_com", linewidth=2, **kwargs)
+    plt.plot(100*fpr_adj, 100*tpr_adj, label="model_adj", linewidth=2, **kwargs)
+    plt.title(f'MODEL ROC')
     plt.xlabel('False positives [%]')
     plt.ylabel('True positives [%]')
     plt.xlim([-0.5,101])
@@ -164,14 +169,14 @@ def predictModel(df):
 def predictTwtModel(df):
     with open('tweet_vectorizer.pickle', 'rb') as inp:
         tweet_vectorizer = pickle.load(inp)
-        model = load_model('deep_sentiment_model_trained_zenith.h5')
+        model = load_model('deep_sentiment_twitter_model_trained.h5')
         predict_me = tweet_vectorizer.transform([df['joined_lemm']]).toarray()
         return float(model.predict(predict_me)[0][0])
 
 def predictComModel(df):
     with open('composite_vectorizer.pickle', 'rb') as inp:
         composite_vectorizer = pickle.load(inp) 
-        model = load_model('deep_sentiment_model_trained_zenith.h5')
+        model = load_model('deep_sentiment_com_model_trained.h5')
         predict_me = composite_vectorizer.transform(df['joined_lemm']).toarray()
         return float(model.predict(predict_me)[0][0])
 

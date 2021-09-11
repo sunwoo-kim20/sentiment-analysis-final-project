@@ -13,7 +13,7 @@ from v_functions import batch_strings, batch_ints, lema_tweet
 
 keyword1 = '(America OR USA OR United States of America)'
 keyword2 =  ' -is:retweet -is:reply lang:en'
-max_results = 10
+max_results = 100
 
 search_url = "https://api.twitter.com/2/tweets/search/recent"
 
