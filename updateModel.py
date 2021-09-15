@@ -20,7 +20,7 @@ import os
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import sklearn
-import datetime
+from datetime import datetime
 
 METRICS = METRICS
 
@@ -63,7 +63,7 @@ norm = Normalizer().fit(vectorized_train)
 norm_vectorized_train = norm.transform(vectorized_train)
 norm_vectorized_test = norm.transform(vectorized_test)
 norm_vectorized_val = norm.transform(vectorized_val)
-pickle.dump(vectorizer, open("tweet_vectorizer.pickle", "wb"))
+pickle.dump(vectorizer, open("Resources/vectorizers/tweet_vectorizer.pickle", "wb"))
 
 train_labels_twt = np.array(y_train)
 bool_train_labels_twt = train_labels_twt != 0
@@ -90,7 +90,7 @@ baseline_history = model_twt.fit(
     epochs=EPOCHS,
     validation_data=(test_features_twt, test_labels_twt),
     callbacks=[early_stopping])
-model_twt.save("deep_sentiment_twitter_model_trained.h5", save_format='tf')
+model_twt.save("Resources/models/deep_sentiment_twitter_model_trained.h5", save_format='tf')
 x_predict_twt = model_twt.predict(val_features_twt)
 y_actual_twt = val_labels_twt
 
@@ -115,7 +115,7 @@ norm = Normalizer().fit(vectorized_train)
 norm_vectorized_train = norm.transform(vectorized_train)
 norm_vectorized_test = norm.transform(vectorized_test)
 norm_vectorized_val = norm.transform(vectorized_val)
-pickle.dump(vectorizer, open("composite_vectorizer.pickle", "wb"))
+pickle.dump(vectorizer, open("Resources/vectorizers/composite_vectorizer.pickle", "wb"))
 
 train_labels_com = np.array(y_train)
 bool_train_labels_com = train_labels_com != 0
@@ -143,7 +143,7 @@ baseline_history = model_com.fit(
     epochs=EPOCHS,
     validation_data=(test_features_com, test_labels_com),
     callbacks=[early_stopping])
-model_com.save("deep_sentiment_composite_model_trained.h5", save_format='tf')
+model_com.save("Resources/models/deep_sentiment_composite_model_trained.h5", save_format='tf')
 
 x_predict_com = model_com.predict(val_features_com)
 y_actual_com = val_labels_com
@@ -174,7 +174,7 @@ norm = Normalizer().fit(vectorized_train)
 norm_vectorized_train = norm.transform(vectorized_train)
 norm_vectorized_test = norm.transform(vectorized_test)
 norm_vectorized_val = norm.transform(vectorized_val)
-pickle.dump(vectorizer, open("adjudication_vectorizer.pickle", "wb"))
+pickle.dump(vectorizer, open("Resources/vectorizers/adjudication_vectorizer.pickle", "wb"))
 
 train_labels_adj = np.array(y_train)
 bool_train_labels_adj = train_labels_adj != 0
@@ -202,9 +202,9 @@ baseline_history = model_adj.fit(
     epochs=EPOCHS,
     validation_data=(test_features_adj, test_labels_adj),
     callbacks=[early_stopping])
-model_adj.save("deep_adjudicator_model_trained.h5", save_format='tf')
+model_adj.save("Resources/models/deep_adjudicator_model_trained.h5", save_format='tf')
 
-x_predict_adj = model_adj.predict(val_features_com)
+x_predict_adj = model_adj.predict(val_features_adj)
 y_actual_adj = val_labels_adj
 
 
@@ -236,7 +236,19 @@ v_functions.plot_cm("Adjudicator Confusion Matrix", v_functions.cmFile_adj,y_act
 
 
 
-
+def pre_rec(y_actual,x_predict):
+    cm = confusion_matrix(y_actual,x_predict > .5)
+    upper_p = cm[1][1]
+    lower_p = cm[1][1] + cm[0][1]
+    precision = 42
+    if lower_p != 0:
+        precision = upper_p / lower_p
+    upper_r = cm[1][1]
+    lower_r = cm[1][1] + cm[1][0]
+    recall = 42
+    if lower_r != 0:
+        recall = upper_r / lower_r
+    return (precision, recall)
 # plt.figure(figsize=(20,10))
 # v_functions.plot_delta_auc("Delta AUC",y_actual_twt,x_predict_twt,color=colors[1])
 
@@ -250,7 +262,8 @@ batch_max = pd.read_sql_query('select batch from tweet_sentiment', con=engine)['
 if steve == 0:
     batch_min = 1
 else:
-    batch_min = pd.read_sql_query('select batch from stats_data', con=engine)['batch'].max() + 1
+    holder = pd.read_sql_query('select batch_max from stats_data', con=engine)['batch_max'].max()
+    batch_min =  v_functions.batch_strings[holder]
     real_version = steve
     
     
@@ -276,18 +289,20 @@ else:
     x_predict_twt_real = df2['predicted_sentiments_twt']
     x_predict_com_real = df2['predicted_sentiments_com']
     y_actual_real = df2['sentiments']
+    precision_adj_real, recall_adj_real = pre_rec(y_actual_adj_real,x_predict_adj_real)
+    # cm_adj_real = confusion_matrix(y_actual_adj_real,x_predict_adj_real > .5)
+    # precision_adj_real = cm_adj_real[1][1]/(cm_adj_real[1][1] + cm_adj_real[0][1])
+    # recall_adj_real = cm_adj_real[1][1]/(cm_adj_real[1][1] + cm_adj_real[1][0])
+    precision_twt_real, recall_twt_real = pre_rec(y_actual_real,x_predict_twt_real)
 
-    cm_adj_real = confusion_matrix(y_actual_adj_real,x_predict_adj_real > .5)
-    precision_adj_real = cm_adj_real[1][1]/(cm_adj_real[1][1] + cm_adj_real[0][1])
-    recall_adj_real = cm_adj_real[1][1]/(cm_adj_real[1][1] + cm_adj_real[1][0])
+    # cm_twt_real = confusion_matrix(y_actual_real,x_predict_twt_real > .5)
+    # precision_twt_real = cm_twt_real[1][1]/(cm_twt_real[1][1] + cm_twt_real[0][1])
+    # recall_twt_real = cm_twt_real[1][1]/(cm_twt_real[1][1] + cm_twt_real[1][0])
+    precision_com_real, recall_com_real = pre_rec(y_actual_real,x_predict_com_real)
 
-    cm_twt_real = confusion_matrix(y_actual_real,x_predict_twt_real > .5)
-    precision_twt_real = cm_twt_real[1][1]/(cm_twt_real[1][1] + cm_twt_real[0][1])
-    recall_twt_real = cm_twt_real[1][1]/(cm_twt_real[1][1] + cm_twt_real[1][0])
-
-    cm_com_real = confusion_matrix(y_actual_real,x_predict_com_real > .5)
-    precision_com_real = cm_com_real[1][1]/(cm_com_real[1][1] + cm_com_real[0][1])
-    recall_com_real = cm_com_real[1][1]/(cm_com_real[1][1] + cm_com_real[1][0])
+    # cm_com_real = confusion_matrix(y_actual_real,x_predict_com_real > .5)
+    # precision_com_real = cm_com_real[1][1]/(cm_com_real[1][1] + cm_com_real[0][1])
+    # recall_com_real = cm_com_real[1][1]/(cm_com_real[1][1] + cm_com_real[1][0])
 
     fpr_twt_real, tpr_twt_real, _ = sklearn.metrics.roc_curve(y_actual_real, x_predict_twt_real)
     fpr_com_real, tpr_com_real, _ = sklearn.metrics.roc_curve(y_actual_real, x_predict_com_real)
@@ -323,18 +338,18 @@ else:
             "version":real_version,
             'precision_adj':precision_adj_real,
             'recall_adj':recall_adj_real,
-            'tpr_adj':tpr_adj_real,
-            'fpr_adj':fpr_adj_real,
+            'tpr_adj':tpr_adj_real.tolist(),
+            'fpr_adj':fpr_adj_real.tolist(),
             'auc_adj':auc_adj_real,       
             'precision_twt':precision_twt_real,
             'recall_twt':recall_twt_real,
-            'tpr_twt':tpr_twt_real,
-            'fpr_twt':fpr_twt_real,
+            'tpr_twt':tpr_twt_real.tolist(),
+            'fpr_twt':fpr_twt_real.tolist(),
             'auc_twt':auc_twt_real,
             'precision_com':precision_com_real,
             'recall_com':recall_com_real,
-            'tpr_com':tpr_com_real,
-            'fpr_com':fpr_com_real,
+            'tpr_com':tpr_com_real.tolist(),
+            'fpr_com':fpr_com_real.tolist(),
             'auc_com':auc_com_real,
             "date":date,
             }])
@@ -342,18 +357,21 @@ else:
 
 
 
+precision_adj, recall_adj = pre_rec(y_actual_adj,x_predict_adj)
+precision_twt, recall_twt = pre_rec(y_actual_twt,x_predict_twt)
+precision_com, recall_com = pre_rec(y_actual_com,x_predict_com)
 
-cm_adj = confusion_matrix(y_actual_adj,x_predict_adj > .5)
-precision_adj = cm_adj[1][1]/(cm_adj[1][1] + cm_adj[0][1])
-recall_adj = cm_adj[1][1]/(cm_adj[1][1] + cm_adj[1][0])
+# cm_adj = confusion_matrix(y_actual_adj,x_predict_adj > .5)
+# precision_adj = cm_adj[1][1]/(cm_adj[1][1] + cm_adj[0][1])
+# recall_adj = cm_adj[1][1]/(cm_adj[1][1] + cm_adj[1][0])
 
-cm_twt = confusion_matrix(y_actual_twt,x_predict_twt > .5)
-precision_twt = cm_twt[1][1]/(cm_twt[1][1] + cm_twt[0][1])
-recall_twt = cm_twt[1][1]/(cm_twt[1][1] + cm_twt[1][0])
+# cm_twt = confusion_matrix(y_actual_twt,x_predict_twt > .5)
+# precision_twt = cm_twt[1][1]/(cm_twt[1][1] + cm_twt[0][1])
+# recall_twt = cm_twt[1][1]/(cm_twt[1][1] + cm_twt[1][0])
 
-cm_com = confusion_matrix(y_actual_com,x_predict_com > .5)
-precision_com = cm_com[1][1]/(cm_com[1][1] + cm_com[0][1])
-recall_com = cm_com[1][1]/(cm_com[1][1] + cm_com[1][0])
+# cm_com = confusion_matrix(y_actual_com,x_predict_com > .5)
+# precision_com = cm_com[1][1]/(cm_com[1][1] + cm_com[0][1])
+# recall_com = cm_com[1][1]/(cm_com[1][1] + cm_com[1][0])
 
 fpr_twt, tpr_twt, _ = sklearn.metrics.roc_curve(y_actual_twt, x_predict_twt)
 fpr_com, tpr_com, _ = sklearn.metrics.roc_curve(y_actual_com, x_predict_com)
@@ -363,7 +381,7 @@ auc_com = sklearn.metrics.auc(fpr_com,tpr_com)
 auc_adj = sklearn.metrics.auc(fpr_adj,tpr_adj)
 
 plt.figure(figsize=(15,7))
-v_functions.plot_roc("ROC", y_actual_twt, x_predict_twt, y_actual_com, x_predict_com, y_actual_adj, x_predict_adj, color=colors[0])
+v_functions.plot_roc("ROC", y_actual_twt, x_predict_twt, y_actual_com, x_predict_com, y_actual_adj, x_predict_adj)
 
 df = pd.read_sql_query('select predicted_sentiments_rd, predicted_sentiments_twt, predicted_sentiments_com, sentiments from tweet_sentiment', con=engine)
 version = steve + 1
@@ -397,18 +415,18 @@ with conn:
         'batch_max':batch_max,
         'precision_adj':precision_adj,
         'recall_adj':recall_adj,
-        'tpr_adj':tpr_adj,
-        'fpr_adj':fpr_adj,
+        'tpr_adj':tpr_adj.tolist(),
+        'fpr_adj':fpr_adj.tolist(),
         'auc_adj':auc_adj,       
         'precision_twt':precision_twt,
         'recall_twt':recall_twt,
-        'tpr_twt':tpr_twt,
-        'fpr_twt':fpr_twt,
+        'tpr_twt':tpr_twt.tolist(),
+        'fpr_twt':fpr_twt.tolist(),
         'auc_twt':auc_twt,
         'precision_com':precision_com,
         'recall_com':recall_com,
-        'tpr_com':tpr_com,
-        'fpr_com':fpr_com,
+        'tpr_com':tpr_com.tolist(),
+        'fpr_com':fpr_com.tolist(),
         'auc_com':auc_com,
         "date":date,
         }])

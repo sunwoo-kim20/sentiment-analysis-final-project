@@ -84,16 +84,16 @@ def plot_cm(title,file_save,labels, predictions, p=0.5):
     plt.savefig(file_save, dpi=300)
 
 rocFile = "static/images/roc.png"    
-def plot_roc(name, labels_twt, predictions_twt, labels_com, predictions_com, labels_adj, predictions_adj, **kwargs):
+def plot_roc(name, labels_twt, predictions_twt, labels_com, predictions_com, labels_adj, predictions_adj):
     fpr_twt, tpr_twt, _ = sklearn.metrics.roc_curve(labels_twt, predictions_twt)
     fpr_com, tpr_com, _ = sklearn.metrics.roc_curve(labels_com, predictions_com)
     fpr_adj, tpr_adj, _ = sklearn.metrics.roc_curve(labels_adj, predictions_adj)
     # auc1 = sklearn.metrics.auc(fpr1,tpr1)
     # auc1 = sklearn.metrics.auc(fpr1,tpr1)
     # auc1 = sklearn.metrics.auc(fpr1,tpr1)
-    plt.plot(100*fpr_twt, 100*tpr_twt, label="model_twt", linewidth=2, **kwargs)
-    plt.plot(100*fpr_com, 100*tpr_com, label="model_com", linewidth=2, **kwargs)
-    plt.plot(100*fpr_adj, 100*tpr_adj, label="model_adj", linewidth=2, **kwargs)
+    plt.plot(100*fpr_twt, 100*tpr_twt, label="model_twt", linewidth=2, color="red")
+    plt.plot(100*fpr_com, 100*tpr_com, label="model_com", linewidth=2, color="blue")
+    plt.plot(100*fpr_adj, 100*tpr_adj, label="model_adj", linewidth=2, color="yellow")
     plt.title(f'MODEL ROC')
     plt.xlabel('False positives [%]')
     plt.ylabel('True positives [%]')
@@ -160,29 +160,29 @@ def lema_tweetz(df,column):
     return final_df
 
 def predictModel(df):
-    with open('vectorizer.pickle', 'rb') as inp:
+    with open('Resources/vectorizers/vectorizer.pickle', 'rb') as inp:
         vectorize = pickle.load(inp)
-        model = load_model('deep_sentiment_model_trained_zenith.h5')
+        model = load_model('Resources/models/deep_sentiment_model_trained_zenith.h5')
         predict_me = vectorize.transform(df['joined_lemm']).toarray()
         return float(model.predict(predict_me)[0][0])
 
 def predictTwtModel(df):
-    with open('tweet_vectorizer.pickle', 'rb') as inp:
+    with open('Resources/vectorizers/tweet_vectorizer.pickle', 'rb') as inp:
         tweet_vectorizer = pickle.load(inp)
-        model = load_model('deep_sentiment_twitter_model_trained.h5')
+        model = load_model('Resources/models/deep_sentiment_twitter_model_trained.h5')
         predict_me = tweet_vectorizer.transform([df['joined_lemm']]).toarray()
         return float(model.predict(predict_me)[0][0])
 
 def predictComModel(df):
-    with open('composite_vectorizer.pickle', 'rb') as inp:
+    with open('Resources/vectorizers/composite_vectorizer.pickle', 'rb') as inp:
         composite_vectorizer = pickle.load(inp) 
-        model = load_model('deep_sentiment_com_model_trained.h5')
+        model = load_model('Resources/models/deep_sentiment_com_model_trained.h5')
         predict_me = composite_vectorizer.transform(df['joined_lemm']).toarray()
         return float(model.predict(predict_me)[0][0])
 def predictAdjModel(df):
-    with open('adjudication_vectorizer.pickle', 'rb') as inp:
+    with open('Resources/vectorizers/adjudication_vectorizer.pickle', 'rb') as inp:
         composite_vectorizer = pickle.load(inp) 
-        model = load_model('deep_adjudicator_model_trained.h5')
+        model = load_model('Resources/models/deep_adjudicator_model_trained.h5')
         predict_me = composite_vectorizer.transform(df['joined_lemm']).toarray()
         return float(model.predict(predict_me)[0][0])
 

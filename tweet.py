@@ -11,7 +11,7 @@ from v_functions import batch_strings, batch_ints, lema_tweet
 
 
 
-keyword1 = '(America OR USA OR United States of America)'
+keyword1 = '(hate OR love OR like OR angry OR happy OR mad OR sad OR USA OR Biden OR Trump OR party OR feel OR emotional OR dead OR alive)'
 keyword2 =  ' -is:retweet -is:reply lang:en'
 max_results = 100
 
@@ -68,7 +68,7 @@ def api_call():
         pos = len(pd.read_sql_query('select sentiments from stats_data WHERE stats_data.sentiments = 1 LIMIT 1250', con=engine))
         if(neg == 1250) and (pos == 1250):
             import updateModel
-            import stats
+            
 
     samples = []
     rez = json_response['data']

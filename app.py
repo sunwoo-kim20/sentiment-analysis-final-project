@@ -51,7 +51,7 @@ def load_tweet():
 	df = pd.read_sql_query('select * from tweet_data WHERE tweet_data.holder = 1', con=conn)
 	df = df.iloc[0]
 	predicted_sentiments_adj = 42
-	if os.path.isfile("deep_adjudicator_model_trained.h5"):
+	if os.path.isfile("Resources/models/deep_adjudicator_model_trained.h5"):
 		predicted_sentiments_adj = predictAdjModel(df)
 
 	tweet_dict = {
@@ -68,7 +68,7 @@ def load_tweet():
 @app.route("/positive_update", methods = ['POST'])
 def positive_update():
 	# Try to grab values, will catch if someone clicks on face before a tweet loads
-	if os.path.isfile("deep_adjudicator_model_trained.h5"):
+	if os.path.isfile("Resources/models/deep_adjudicator_model_trained.h5"):
 		df = pd.DataFrame()
 		df['tweet'] = [request.form['tweet']]
 		df['joined_lemm'] = [request.form['joined_lemm']]
@@ -159,7 +159,7 @@ def positive_update():
 
 @app.route("/negative_update", methods = ['POST'])
 def negative_update():
-	if os.path.isfile("deep_adjudicator_model_trained.h5"):
+	if os.path.isfile("Resources/models/deep_adjudicator_model_trained.h5"):
 		df = pd.DataFrame()
 		df['tweet'] = [request.form['tweet']]
 		df['joined_lemm'] = [request.form['joined_lemm']]
@@ -247,7 +247,7 @@ def negative_update():
 	return {}
 @app.route("/neutral_update", methods = ['POST'])
 def neutralupdate():
-	if os.path.isfile("deep_adjudicator_model_trained.h5"):
+	if os.path.isfile("Resources/models/deep_adjudicator_model_trained.h5"):
 		predicted_sentiments_adj = request.form['predicted_sentiments_adj']
 		tweet_dict = {
 		"id": request.form['id'],

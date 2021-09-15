@@ -44,7 +44,7 @@ norm_vectorized_train = norm.transform(vectorized_train)
 norm_vectorized_test = norm.transform(vectorized_test)
 norm_vectorized_val = norm.transform(vectorized_val)
 
-pickle.dump(vectorizer, open("vectorizer.pickle", "wb"))
+pickle.dump(vectorizer, open("Resources/vectorizers/vectorizer.pickle", "wb"))
 
 train_labels = np.array(y_train)
 bool_train_labels = train_labels != 0
@@ -74,4 +74,4 @@ baseline_history = model.fit(
     validation_data=(val_features, val_labels),
     callbacks=[early_stopping])
 
-model.save("deep_sentiment_model_trained_zenith.h5", save_format='tf')
+model.save("Resources/models/deep_sentiment_model_trained_zenith.h5", save_format='tf')
