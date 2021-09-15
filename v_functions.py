@@ -170,20 +170,20 @@ def predictTwtModel(df):
     with open('Resources/vectorizers/tweet_vectorizer.pickle', 'rb') as inp:
         tweet_vectorizer = pickle.load(inp)
         model = load_model('Resources/models/deep_sentiment_twitter_model_trained.h5')
-        predict_me = tweet_vectorizer.transform([df['joined_lemm']]).toarray()
+        predict_me = tweet_vectorizer.transform(df['joined_lemm']).toarray()
         return float(model.predict(predict_me)[0][0])
 
 def predictComModel(df):
     with open('Resources/vectorizers/composite_vectorizer.pickle', 'rb') as inp:
         composite_vectorizer = pickle.load(inp) 
-        model = load_model('Resources/models/deep_sentiment_com_model_trained.h5')
+        model = load_model('Resources/models/deep_sentiment_composite_model_trained.h5')
         predict_me = composite_vectorizer.transform(df['joined_lemm']).toarray()
         return float(model.predict(predict_me)[0][0])
 def predictAdjModel(df):
     with open('Resources/vectorizers/adjudication_vectorizer.pickle', 'rb') as inp:
         composite_vectorizer = pickle.load(inp) 
         model = load_model('Resources/models/deep_adjudicator_model_trained.h5')
-        predict_me = composite_vectorizer.transform(df['joined_lemm']).toarray()
+        predict_me = composite_vectorizer.transform([df['joined_lemm']]).toarray()
         return float(model.predict(predict_me)[0][0])
 
 if os.path.isfile("batch_strings.pickle"):
