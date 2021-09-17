@@ -14,7 +14,20 @@ import tweet
 from multiprocessing import Value
 import os
 from config import rds_connection_string
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+import json
+import numpy as np
 
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        else:
+            return super(NpEncoder, self).default(obj)
 
 # initialize flask
 app = Flask(__name__)
@@ -62,7 +75,7 @@ def load_tweet():
 		"predicted_sentiments_adj":predicted_sentiments_adj
 		}
 
-	return jsonify(tweet_dict)
+	return json.dumps(tweet_dict, cls=NpEncoder)
 
 
 @app.route("/positive_update", methods = ['POST'])
@@ -103,7 +116,7 @@ def positive_update():
 		conn = engine.connect()
 		with conn:
 			conn.execute(insert(tweet_sentiment),[{
-				"Id":request.form['id'],
+				"id":request.form['id'],
 				"tweet":tweet_dict['tweet'],
 				"joined_lemm":tweet_dict['joined_lemm'],
 				"sentiments": tweet_dict['sentiments'],
@@ -111,7 +124,7 @@ def positive_update():
 				"Date":tweet_dict['Date'],
 				"predicted_sentiments_twt":tweet_dict['predicted_sentiments_twt'],
 				"predicted_sentiments_com":tweet_dict['predicted_sentiments_com'],
-				"batch":request.form['batch']
+				"batch":request.form.get('batch', type=int)
 
 				}])
 	else:
@@ -144,7 +157,7 @@ def positive_update():
 		conn = engine.connect()
 		with conn:
 			conn.execute(insert(tweet_sentiment),[{
-				"Id":request.form['id'],
+				"id":request.form['id'],
 				"tweet":tweet_dict['tweet'],
 				"joined_lemm":tweet_dict['joined_lemm'],
 				"sentiments": tweet_dict['sentiments'],
@@ -152,7 +165,7 @@ def positive_update():
 				"Date":tweet_dict['Date'],
 				"predicted_sentiments_twt":42,
 				"predicted_sentiments_com":42,
-				"batch":request.form['batch'],
+				"batch":request.form.get('batch', type=int),
 				"predicted_sentiments_adj":42
 				}])		
 	return {}
@@ -193,7 +206,7 @@ def negative_update():
 		conn = engine.connect()
 		with conn:
 			conn.execute(insert(tweet_sentiment),[{
-				"Id":request.form['id'],
+				"id":request.form['id'],
 				"tweet":tweet_dict['tweet'],
 				"joined_lemm":tweet_dict['joined_lemm'],
 				"sentiments": tweet_dict['sentiments'],
@@ -201,7 +214,7 @@ def negative_update():
 				"Date":tweet_dict['Date'],
 				"predicted_sentiments_twt":tweet_dict['predicted_sentiments_twt'],
 				"predicted_sentiments_com":tweet_dict['predicted_sentiments_com'],
-				"batch":request.form['batch'],
+				"batch":request.form.get('batch', type=int),
 				"predicted_sentiments_adj":predicted_sentiments_adj
 				}])
 	else:
@@ -220,11 +233,12 @@ def negative_update():
 			"predicted_sentiments_rd":predicted_sentiments_rd,
 			"Date": datetime.now()
 		}
-
+		holder12 = request.form['id']
+		print(type(tweet_dict['id']))
 		conn = engine.connect()
 		tweet_update = (
 			update(tweet_data).
-			where(tweet_data.c.id == tweet_dict['id']).
+			where(tweet_data.c.id == holder12).
 			values(holder=0)
 			)
 		conn.execute(tweet_update)
@@ -233,7 +247,7 @@ def negative_update():
 		conn = engine.connect()
 		with conn:
 			conn.execute(insert(tweet_sentiment),[{
-				"Id":request.form['id'],
+				"id":request.form['id'],
 				"tweet":tweet_dict['tweet'],
 				"joined_lemm":tweet_dict['joined_lemm'],
 				"sentiments": tweet_dict['sentiments'],
@@ -241,7 +255,7 @@ def negative_update():
 				"Date":tweet_dict['Date'],
 				"predicted_sentiments_twt":42,
 				"predicted_sentiments_com":42,
-				"batch":request.form['batch'],
+				"batch":request.form.get('batch', type=int),
 				"predicted_sentiments_adj":42
 				}])
 	return {}
@@ -273,7 +287,7 @@ def neutralupdate():
 				"tweet":tweet_dict['tweet'],
 				"joined_lemm":tweet_dict['joined_lemm'],
 				"Date":tweet_dict['Date'],
-				"batch":request.form['batch'],
+				"batch":request.form.get('batch', type=int),
 				"predicted_sentiments_adj":predicted_sentiments_adj
 				}])
 	else:
@@ -301,7 +315,7 @@ def neutralupdate():
 				"tweet":tweet_dict['tweet'],
 				"joined_lemm":tweet_dict['joined_lemm'],
 				"Date":tweet_dict['Date'],
-				"batch":request.form['batch'],
+				"batch":request.form.get('batch', type=int),
 				"predicted_sentiments_adj":42
 				}])
 	return {}

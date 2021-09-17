@@ -1,21 +1,31 @@
 function clickedFace(choice) {
     var data = d3.select(".tweetholder").data()[0]
-    console.log(data)
     // call route to give vote to flask 
     if (choice === 'Positive') {
         $.post("/positive_update", data);
-        updateTweet();
+        // updateTweet();
+        setTimeout(updateTweet,1000)
+        // setTimeout(location.reload(), 3000);
+
     }
     if (choice === 'Negative') {
         $.post( "/negative_update", data);
-        updateTweet();
+        // setTimeout(location.reload(), 3000);
+        setTimeout(updateTweet,1000)
+        // updateTweet();
+
     }
     if (choice === 'Neutral') {
         $.post("/neutral_update", data);
-        updateTweet();
+        setTimeout(updateTweet,1000)
+        // updateTweet();
     }
+    // setTimeout(location.reload(), 3000)
+    setTimeout(updateTweet,1000)
 
-    setTimeout(updateTweet(), 3)
+    // updateTweet()
+    // setTimeout(location.reload(), 3000);
+
 }
 
 

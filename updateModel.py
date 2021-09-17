@@ -256,19 +256,17 @@ def pre_rec(y_actual,x_predict):
 # plt.figure(figsize=(10,10))
 # v_functions.plot_prc("PRC", y_actual_twt, x_predict_twt, color=colors[2])
 date = datetime.now()
-steve = len(pd.read_sql_query('select date from stats_data', con=engine))
-batch_min = 0
+batch_df = pd.read_sql_query('select batch_max, version from stats_data', con=engine)
+steve = len(batch_df)
+batch_min = 1
 batch_max = pd.read_sql_query('select batch from tweet_sentiment', con=engine)['batch'].max()
-if steve == 0:
-    batch_min = 1
-else:
-    holder = pd.read_sql_query('select batch_max from stats_data', con=engine)['batch_max'].max()
-    batch_min =  v_functions.batch_strings[holder]
-    real_version = steve
-    
-    
-    df1 = pd.read_sql_query(f'select predicted_sentiments_adj from filter_data WHERE batch >= {batch_min} and batch <= {batch_max}', con=engine)
-    df2 = pd.read_sql_query(f'select predicted_sentiments_adj,predicted_sentiments_twt,predicted_sentiments_com, sentiments from tweet_sentiment WHERE batch >= {batch_min} and batch <= {batch_max}', con=engine)
+if steve != 0:
+    batch_min += batch_df['batch_max'].max()
+    real_version = batch_df['version'].max()
+    string1 = f'select predicted_sentiments_adj from filter_data WHERE batch > {batch_min} and batch <= {batch_max}'
+    df1 = pd.read_sql_query(string1, con=engine)
+    string2 = 'select predicted_sentiments_adj,predicted_sentiments_twt,predicted_sentiments_com, sentiments from tweet_sentiment WHERE batch  > {batch_min} and batch <= {batch_max}'
+    df2 = pd.read_sql_query(string2, con=engine)
     df_holder = pd.DataFrame()
     df_holder['predicted_sentiments_adj'] = df2['predicted_sentiments_adj']
     holder1 = []
@@ -312,26 +310,8 @@ else:
     auc_adj_real = sklearn.metrics.auc(fpr_adj_real,tpr_adj_real)
 
     meta = MetaData()
-    performance = Table("performance_stats", meta,
-        Column('version', String, primary_key=True), 
-        Column('date', Date), 
-        Column('precision_adj', Float),
-        Column('recall_adj', Float),
-        Column('tpr_adj', Float),
-        Column('fpr_adj', Float),
-        Column('auc_adj', Float),
-        Column('precision_twt', Float),
-        Column('recall_twt', Float),
-        Column('tpr_twt', Float),
-        Column('fpr_twt', Float),
-        Column('auc_twt', Float),
-        Column('precision_com', Float),
-        Column('recall_rd_com', Float),
-        Column('tpr_com', Float),
-        Column('fpr_com', Float),
-        Column('auc_com', Float),     
-                )
-
+    performance = Table('performance_stats', metadata, autoload=True, autoload_with=engine)
+    
     conn = engine.connect()
     with conn:
         conn.execute(insert(performance),[{
@@ -386,27 +366,10 @@ v_functions.plot_roc("ROC", y_actual_twt, x_predict_twt, y_actual_com, x_predict
 df = pd.read_sql_query('select predicted_sentiments_rd, predicted_sentiments_twt, predicted_sentiments_com, sentiments from tweet_sentiment', con=engine)
 version = steve + 1
 meta = MetaData()
-stats = Table("stats_data", meta,
-        Column('version', String, primary_key=True), 
-        Column('date', Date), 
-        Column('precision_adj', Float),
-        Column('recall_adj', Float),
-        Column('tpr_adj', Float),
-        Column('fpr_adj', Float),
-        Column('auc_adj', Float),
-        Column('precision_twt', Float),
-        Column('recall_twt', Float),
-        Column('tpr_twt', Float),
-        Column('fpr_twt', Float),
-        Column('auc_twt', Float),
-        Column('precision_com', Float),
-        Column('recall_rd_com', Float),
-        Column('tpr_com', Float),
-        Column('fpr_com', Float),
-        Column('auc_com', Float),
-        Column('batch_min', String),
-        Column('batch_max', String),        
-                )
+stats = Table('stats_data', metadata, autoload=True, autoload_with=engine)
+
+      
+
 conn = engine.connect()
 with conn:
     conn.execute(insert(stats),[{

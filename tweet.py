@@ -8,12 +8,15 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 import pandas as pd
 from v_functions import batch_strings, batch_ints, lema_tweet
-
+from psycopg2.extensions import register_adapter, AsIs
+import psycopg2
+import numpy as np
+psycopg2.extensions.register_adapter(np.int64, psycopg2._psycopg.AsIs)
 
 
 keyword1 = '(hate OR love OR like OR angry OR happy OR mad OR sad OR USA OR Biden OR Trump OR party OR feel OR emotional OR dead OR alive)'
 keyword2 =  ' -is:retweet -is:reply lang:en'
-max_results = 100
+max_results = 10
 
 search_url = "https://api.twitter.com/2/tweets/search/recent"
 
@@ -47,17 +50,14 @@ def api_call():
     session = Session(bind=engine)
     
     modded = 1
-    holder = 0
-    if session.query(tweet_data).count() == 0:
-        batch = batch_strings['0']
-    else:
+    batch = 1
+    if session.query(tweet_data).count() != 0:
+        Conn = engine.connect()
         batch_df = pd.read_sql_query('select batch from tweet_data ORDER BY batch DESC LIMIT 1', con=engine)
-        holder = batch_df['batch'].max()
-        batch = batch_strings[holder]
-        modded = batch_ints[batch]    
+        batch += batch_df['batch'].max()   
         d = tweet_data.delete().where(tweet_data.c.holder == 0)
         d.execute()
-        Conn = engine.connect()
+        
     
 
     

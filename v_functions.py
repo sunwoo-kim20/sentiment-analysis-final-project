@@ -186,25 +186,25 @@ def predictAdjModel(df):
         predict_me = composite_vectorizer.transform([df['joined_lemm']]).toarray()
         return float(model.predict(predict_me)[0][0])
 
-if os.path.isfile("batch_strings.pickle"):
-    with open('batch_strings.pickle', 'rb') as inp:
-        batch_strings = pickle.load(inp)
-else:
-    steve = np.arange(0,999999,1)
-    batch_strings = {}
-    for i in steve:
-        batch_strings[f'{i}'] = f'{i + 1}'
-    pickle.dump(batch_strings, open("batch_strings.pickle", "wb"))
+# if os.path.isfile("batch_strings.pickle"):
+#     with open('batch_strings.pickle', 'rb') as inp:
+#         batch_strings = pickle.load(inp)
+# else:
+#     steve = np.arange(0,999999,1)
+#     batch_strings = {}
+#     for i in steve:
+#         batch_strings[f'{i}'] = f'{i + 1}'
+#     pickle.dump(batch_strings, open("batch_strings.pickle", "wb"))
 
-if os.path.isfile("batch_ints.pickle"):
-    with open('batch_ints.pickle', 'rb') as inp:
-        batch_ints = pickle.load(inp)
-else:
-    holder = np.arange(0,999999,1)
-    batch_ints = {}
-    for i in holder:
-        batch_ints[f'{i}'] = i
-    pickle.dump(batch_ints, open("batch_ints.pickle", "wb"))
+# if os.path.isfile("batch_ints.pickle"):
+#     with open('batch_ints.pickle', 'rb') as inp:
+#         batch_ints = pickle.load(inp)
+# else:
+#     holder = np.arange(0,999999,1)
+#     batch_ints = {}
+#     for i in holder:
+#         batch_ints[f'{i}'] = i
+#     pickle.dump(batch_ints, open("batch_ints.pickle", "wb"))
 
 
 
