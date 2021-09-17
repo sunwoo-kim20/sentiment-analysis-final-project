@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 import pandas as pd
-from v_functions import batch_strings, batch_ints, lema_tweet
+from v_functions import lema_tweet
 from psycopg2.extensions import register_adapter, AsIs
 import psycopg2
 import numpy as np
