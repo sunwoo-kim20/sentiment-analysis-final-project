@@ -16,6 +16,8 @@ from config import rds_connection_string
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import json
 import numpy as np
+import psycopg2
+psycopg2.extensions.register_adapter(np.int64, psycopg2._psycopg.AsIs)
 
 class NpEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -84,7 +86,7 @@ def positive_update():
 		df = pd.DataFrame()
 		df['tweet'] = [request.form['tweet']]
 		df['joined_lemm'] = [request.form['joined_lemm']]
-		predicted_sentiments_adj = request.form['predicted_sentiments_adj']
+		predicted_sentiments_adj = request.form.get('predicted_sentiments_adj', type=float)
 		predicted_sentiments_rd = predictModel(df)
 		predicted_sentiments_twt = predictTwtModel(df)
 		predicted_sentiments_com = predictComModel(df)
@@ -123,7 +125,8 @@ def positive_update():
 				"Date":tweet_dict['Date'],
 				"predicted_sentiments_twt":tweet_dict['predicted_sentiments_twt'],
 				"predicted_sentiments_com":tweet_dict['predicted_sentiments_com'],
-				"batch":request.form.get('batch', type=int)
+				"batch":request.form.get('batch', type=int),
+				"predicted_sentiments_adj":predicted_sentiments_adj
 
 				}])
 	else:
@@ -175,7 +178,7 @@ def negative_update():
 		df = pd.DataFrame()
 		df['tweet'] = [request.form['tweet']]
 		df['joined_lemm'] = [request.form['joined_lemm']]
-		predicted_sentiments_adj = request.form['predicted_sentiments_adj']
+		predicted_sentiments_adj = request.form.get('predicted_sentiments_adj', type=float)
 		predicted_sentiments_rd = predictModel(df)
 		predicted_sentiments_twt = predictTwtModel(df)
 		predicted_sentiments_com = predictComModel(df)
@@ -261,7 +264,7 @@ def negative_update():
 @app.route("/neutral_update", methods = ['POST'])
 def neutralupdate():
 	if os.path.isfile("Resources/models/deep_adjudicator_model_trained.h5"):
-		predicted_sentiments_adj = request.form['predicted_sentiments_adj']
+		predicted_sentiments_adj = request.form.get('predicted_sentiments_adj', type=float)
 		tweet_dict = {
 		"id": request.form['id'],
 		"tweet": request.form['tweet'],

@@ -21,6 +21,8 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import sklearn
 from datetime import datetime
+import psycopg2
+psycopg2.extensions.register_adapter(np.int64, psycopg2._psycopg.AsIs)
 
 METRICS = METRICS
 
@@ -155,8 +157,10 @@ pos_composite_string2 = querry_string_base + ' 1 ORDER BY RANDOM() LIMIT 1000'
 comp_df = pd.concat([pd.read_sql_query(neg_composite_string2, con=engine), pd.read_sql_query(pos_composite_string2, con=engine),df])
 
 filter_df = pd.read_sql_query('select joined_lemm from filter_data ORDER BY RANDOM() LIMIT 3000', con=engine)
+stevenz = []
 for i in range(len(filter_df)):
-    filter_df['sentiments'] = 1
+    stevenz.append(1)
+filter_df['sentiments'] = stevenz
 comp_df['sentiments'] = df.sentiments.apply(lambda x: 0 if x in ['0'] else 0)
 
 adjudicator_df = pd.concat([comp_df,filter_df])
@@ -261,12 +265,20 @@ steve = len(batch_df)
 batch_min = 1
 batch_max = pd.read_sql_query('select batch from tweet_sentiment', con=engine)['batch'].max()
 if steve != 0:
+
     batch_min += batch_df['batch_max'].max()
     real_version = batch_df['version'].max()
-    string1 = f'select predicted_sentiments_adj from filter_data WHERE batch > {batch_min} and batch <= {batch_max}'
+    string1 = 'select predicted_sentiments_adj from filter_data WHERE batch > ' + str(batch_min) + ' and batch <= ' + str(batch_max)
     df1 = pd.read_sql_query(string1, con=engine)
-    string2 = 'select predicted_sentiments_adj,predicted_sentiments_twt,predicted_sentiments_com, sentiments from tweet_sentiment WHERE batch  > {batch_min} and batch <= {batch_max}'
+
+
+
+
+
+    string2 = 'select predicted_sentiments_adj,predicted_sentiments_twt,predicted_sentiments_com, sentiments from tweet_sentiment WHERE batch  > ' + str(batch_min) + ' and batch <= ' + str(batch_max)
+
     df2 = pd.read_sql_query(string2, con=engine)
+
     df_holder = pd.DataFrame()
     df_holder['predicted_sentiments_adj'] = df2['predicted_sentiments_adj']
     holder1 = []
@@ -279,8 +291,6 @@ if steve != 0:
     df_holder['sentiments_adj'] = holder2
 
     joined_adj_df = pd.concat([df1,df_holder])
-
-
     x_predict_adj_real = joined_adj_df['predicted_sentiments_adj']
     y_actual_adj_real = joined_adj_df['sentiments_adj']
 
@@ -288,30 +298,21 @@ if steve != 0:
     x_predict_com_real = df2['predicted_sentiments_com']
     y_actual_real = df2['sentiments']
     precision_adj_real, recall_adj_real = pre_rec(y_actual_adj_real,x_predict_adj_real)
-    # cm_adj_real = confusion_matrix(y_actual_adj_real,x_predict_adj_real > .5)
-    # precision_adj_real = cm_adj_real[1][1]/(cm_adj_real[1][1] + cm_adj_real[0][1])
-    # recall_adj_real = cm_adj_real[1][1]/(cm_adj_real[1][1] + cm_adj_real[1][0])
+
     precision_twt_real, recall_twt_real = pre_rec(y_actual_real,x_predict_twt_real)
 
-    # cm_twt_real = confusion_matrix(y_actual_real,x_predict_twt_real > .5)
-    # precision_twt_real = cm_twt_real[1][1]/(cm_twt_real[1][1] + cm_twt_real[0][1])
-    # recall_twt_real = cm_twt_real[1][1]/(cm_twt_real[1][1] + cm_twt_real[1][0])
     precision_com_real, recall_com_real = pre_rec(y_actual_real,x_predict_com_real)
 
-    # cm_com_real = confusion_matrix(y_actual_real,x_predict_com_real > .5)
-    # precision_com_real = cm_com_real[1][1]/(cm_com_real[1][1] + cm_com_real[0][1])
-    # recall_com_real = cm_com_real[1][1]/(cm_com_real[1][1] + cm_com_real[1][0])
 
     fpr_twt_real, tpr_twt_real, _ = sklearn.metrics.roc_curve(y_actual_real, x_predict_twt_real)
     fpr_com_real, tpr_com_real, _ = sklearn.metrics.roc_curve(y_actual_real, x_predict_com_real)
-    fpr_adj_real, tpr_adj_real, _ = sklearn.metrics.roc_curve(y_actual_real, x_predict_adj_real)
+    fpr_adj_real, tpr_adj_real, _ = sklearn.metrics.roc_curve(y_actual_adj_real, x_predict_adj_real)
     auc_twt_real = sklearn.metrics.auc(fpr_twt_real,tpr_twt_real)
     auc_com_real = sklearn.metrics.auc(fpr_com_real,tpr_com_real)
     auc_adj_real = sklearn.metrics.auc(fpr_adj_real,tpr_adj_real)
-
     meta = MetaData()
     performance = Table('performance_stats', metadata, autoload=True, autoload_with=engine)
-    
+
     conn = engine.connect()
     with conn:
         conn.execute(insert(performance),[{
@@ -341,17 +342,6 @@ precision_adj, recall_adj = pre_rec(y_actual_adj,x_predict_adj)
 precision_twt, recall_twt = pre_rec(y_actual_twt,x_predict_twt)
 precision_com, recall_com = pre_rec(y_actual_com,x_predict_com)
 
-# cm_adj = confusion_matrix(y_actual_adj,x_predict_adj > .5)
-# precision_adj = cm_adj[1][1]/(cm_adj[1][1] + cm_adj[0][1])
-# recall_adj = cm_adj[1][1]/(cm_adj[1][1] + cm_adj[1][0])
-
-# cm_twt = confusion_matrix(y_actual_twt,x_predict_twt > .5)
-# precision_twt = cm_twt[1][1]/(cm_twt[1][1] + cm_twt[0][1])
-# recall_twt = cm_twt[1][1]/(cm_twt[1][1] + cm_twt[1][0])
-
-# cm_com = confusion_matrix(y_actual_com,x_predict_com > .5)
-# precision_com = cm_com[1][1]/(cm_com[1][1] + cm_com[0][1])
-# recall_com = cm_com[1][1]/(cm_com[1][1] + cm_com[1][0])
 
 fpr_twt, tpr_twt, _ = sklearn.metrics.roc_curve(y_actual_twt, x_predict_twt)
 fpr_com, tpr_com, _ = sklearn.metrics.roc_curve(y_actual_com, x_predict_com)
